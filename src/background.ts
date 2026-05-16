@@ -17,6 +17,11 @@ import {
   type TimerMode,
   type TimerState,
 } from "./storage";
+import {
+  DEFAULT_KEEP_DAYS,
+  pruneOldDays,
+  recordWorkCompletion,
+} from "./stats";
 import { nextMode, totalForMode } from "./timer-utils";
 
 const ALARM_PHASE_END = "focus-timer:phase-end";
@@ -82,7 +87,16 @@ async function reset(): Promise<void> {
 async function skip(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   let sessionCount = timer.session_count;
+  // Partial-work credit on skip: count toward stats only when the user has
+  // already invested >= MIN_SKIP_FOCUS_MS in the session. recordWorkCompletion
+  // itself enforces the floor so we can pass the raw elapsed value here.
   if (timer.mode === "work") {
+    const total = totalForMode("work", settings);
+    const remaining = timer.running && timer.end_ts > 0
+      ? Math.max(0, timer.end_ts - Date.now())
+      : Math.max(0, timer.remaining_ms);
+    const elapsedMs = Math.max(0, total - remaining);
+    await recordWorkSession(elapsedMs, Date.now());
     sessionCount = sessionCount + 1;
   }
   const next = nextMode(timer.mode, sessionCount, settings);
@@ -102,11 +116,23 @@ async function skip(): Promise<void> {
   await clearPhaseAlarm();
 }
 
+async function recordWorkSession(focusMs: number, endTs: number): Promise<void> {
+  const stats = await get("stats");
+  const recorded = recordWorkCompletion(stats, focusMs, endTs);
+  if (recorded === stats) return;
+  const pruned = pruneOldDays(recorded, DEFAULT_KEEP_DAYS, endTs);
+  await set("stats", pruned);
+}
+
 async function handlePhaseEnd(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   if (!timer.running) return;
   let sessionCount = timer.session_count;
+  // endTs comes from the stored alarm boundary, not Date.now(), so a delayed
+  // service-worker wake doesn't push completion onto the wrong calendar day.
+  const endTs = timer.end_ts > 0 ? timer.end_ts : Date.now();
   if (timer.mode === "work") {
+    await recordWorkSession(totalForMode("work", settings), endTs);
     sessionCount = sessionCount + 1;
   }
   const next = nextMode(timer.mode, sessionCount, settings);

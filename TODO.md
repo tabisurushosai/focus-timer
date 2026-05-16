@@ -27,7 +27,7 @@
 - [x] T020: child-mode — 実装
 - [x] T021: child-mode — テスト・整合
 - [x] T022: session-stats — 設計
-- [ ] T023: session-stats — 実装
+- [x] T023: session-stats — 実装
 - [ ] T024: session-stats — テスト・整合
 - [ ] T025: sound-mute — 設計
 - [ ] T026: sound-mute — 実装

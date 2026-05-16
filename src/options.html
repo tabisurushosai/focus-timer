@@ -162,6 +162,98 @@
           </label>
         </section>
 
+        <section class="options__section" aria-labelledby="sec-stats-heading">
+          <h2 id="sec-stats-heading" class="options__section-title" data-i18n="options_stats_7days_title">
+            直近7日の集中
+          </h2>
+          <div
+            id="stats-7days"
+            class="stats-chart"
+            role="list"
+            aria-labelledby="sec-stats-heading"
+          ></div>
+          <p
+            id="stats-empty"
+            class="field__hint stats-empty"
+            data-i18n="options_stats_empty"
+            hidden
+          ></p>
+
+          <div
+            id="stats-premium"
+            class="stats-premium"
+            hidden
+          >
+            <h3 class="options__section-title" data-i18n="options_stats_premium_title">
+              詳細な集中サマリ
+            </h3>
+            <div class="stats-tabs" role="tablist" aria-label="premium summary range">
+              <button
+                type="button"
+                role="tab"
+                class="stats-tab is-active"
+                id="stats-tab-30"
+                data-range="30"
+                aria-selected="true"
+                data-i18n="options_stats_tab_30"
+              >
+                30日
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="stats-tab"
+                id="stats-tab-90"
+                data-range="90"
+                aria-selected="false"
+                data-i18n="options_stats_tab_90"
+              >
+                90日
+              </button>
+            </div>
+            <div
+              id="stats-premium-chart"
+              class="stats-chart stats-chart--premium"
+              role="list"
+              aria-labelledby="stats-tab-30"
+            ></div>
+            <div class="stats-totals">
+              <div class="meta-row">
+                <span class="meta-row__label" data-i18n="options_stats_total_focus_min">累計集中分</span>
+                <span class="meta-row__value" id="stats-total-focus-min">0</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-row__label" data-i18n="options_stats_total_sessions">累計セッション数</span>
+                <span class="meta-row__value" id="stats-total-sessions">0</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              id="btn-export-csv"
+              class="btn"
+              data-i18n="options_stats_export_csv"
+            >
+              CSV でエクスポート
+            </button>
+          </div>
+
+          <p
+            id="stats-premium-upgrade"
+            class="field__hint stats-premium-upgrade"
+            data-i18n="options_stats_premium_upgrade"
+            hidden
+          ></p>
+
+          <button
+            type="button"
+            id="btn-clear-stats"
+            class="btn btn--ghost stats-clear"
+            data-i18n="options_stats_clear"
+          >
+            統計をすべて削除
+          </button>
+        </section>
+
         <section class="options__section options__section--premium" aria-labelledby="sec-premium-heading">
           <h2 id="sec-premium-heading" class="options__section-title" data-i18n="options_section_premium">
             Premium
@@ -218,6 +310,36 @@
         </footer>
       </form>
     </main>
+
+    <dialog
+      id="confirm-action"
+      class="confirm"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-body"
+    >
+      <form method="dialog" class="confirm__form">
+        <h2 id="confirm-title" class="confirm__title"></h2>
+        <p id="confirm-body" class="confirm__body"></p>
+        <div class="confirm__actions">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn btn--ghost"
+            data-i18n="common_cancel"
+          >
+            キャンセル
+          </button>
+          <button
+            type="submit"
+            value="ok"
+            class="btn btn--primary"
+            data-i18n="common_ok"
+          >
+            OK
+          </button>
+        </div>
+      </form>
+    </dialog>
 
     <script type="module" src="./options.ts"></script>
   </body>

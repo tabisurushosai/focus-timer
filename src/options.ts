@@ -4,7 +4,13 @@
  * and persists changes back. Form is the source of truth on submit.
  */
 
-import { applyI18nToDom, t } from "./i18n";
+import { applyI18nToDom, t, type MessageKey } from "./i18n";
+import { lastNDays } from "./stats";
+import {
+  DEFAULT_STATS,
+  hasPremiumAccess,
+  type Stats,
+} from "./storage";
 
 type Theme = "light" | "dark" | "system";
 type Language = "ja" | "en" | "auto";
@@ -74,7 +80,23 @@ const els = {
   btnUpgrade: document.getElementById("btn-upgrade") as HTMLButtonElement,
   btnReset: document.getElementById("btn-reset") as HTMLButtonElement,
   savedIndicator: document.getElementById("saved-indicator") as HTMLElement,
+  stats7days: document.getElementById("stats-7days") as HTMLElement | null,
+  statsEmpty: document.getElementById("stats-empty") as HTMLElement | null,
+  statsPremium: document.getElementById("stats-premium") as HTMLElement | null,
+  statsPremiumChart: document.getElementById("stats-premium-chart") as HTMLElement | null,
+  statsPremiumUpgrade: document.getElementById("stats-premium-upgrade") as HTMLElement | null,
+  statsTotalFocusMin: document.getElementById("stats-total-focus-min") as HTMLElement | null,
+  statsTotalSessions: document.getElementById("stats-total-sessions") as HTMLElement | null,
+  statsTab30: document.getElementById("stats-tab-30") as HTMLButtonElement | null,
+  statsTab90: document.getElementById("stats-tab-90") as HTMLButtonElement | null,
+  btnExportCsv: document.getElementById("btn-export-csv") as HTMLButtonElement | null,
+  btnClearStats: document.getElementById("btn-clear-stats") as HTMLButtonElement | null,
+  confirmDialog: document.getElementById("confirm-action") as HTMLDialogElement | null,
+  confirmTitle: document.getElementById("confirm-title") as HTMLElement | null,
+  confirmBody: document.getElementById("confirm-body") as HTMLElement | null,
 };
+
+let premiumRange: 30 | 90 = 30;
 
 let savedIndicatorTimeout: number | undefined;
 
@@ -186,16 +208,166 @@ function flashSaved(): void {
   }, SAVED_INDICATOR_MS);
 }
 
+function formatRowAriaLabel(date: string, focusMin: number, sessions: number): string {
+  const localized = formatRowDate(date);
+  return t("options_stats_row_label", [localized, String(focusMin), String(sessions)]);
+}
+
+function formatRowDate(isoDate: string): string {
+  // YYYY-MM-DD → M/D (locale-neutral; Intl is overkill for the bar labels and
+  // would balloon bundle size in the service worker too).
+  const [, m, d] = isoDate.split("-");
+  return `${Number(m)}/${Number(d)}`;
+}
+
+function renderChart(
+  container: HTMLElement,
+  rows: Array<{ date: string; focus_min: number; sessions: number }>,
+): void {
+  container.replaceChildren();
+  if (rows.length === 0) return;
+  const max = rows.reduce((acc, r) => Math.max(acc, r.focus_min), 0);
+  for (const row of rows) {
+    const item = document.createElement("div");
+    item.className = "stats-row";
+    item.setAttribute("role", "listitem");
+    item.setAttribute("aria-label", formatRowAriaLabel(row.date, row.focus_min, row.sessions));
+
+    const dateEl = document.createElement("span");
+    dateEl.className = "stats-row__date";
+    dateEl.textContent = formatRowDate(row.date);
+
+    const track = document.createElement("div");
+    track.className = "stats-row__track";
+    track.setAttribute("aria-hidden", "true");
+    const bar = document.createElement("div");
+    bar.className = "stats-row__bar";
+    const pct = max > 0 ? (row.focus_min / max) * 100 : 0;
+    bar.style.width = `${pct}%`;
+    track.appendChild(bar);
+
+    const value = document.createElement("span");
+    value.className = "stats-row__value";
+    value.textContent = `${row.focus_min}${t("options_stats_minutes_unit")} / ${row.sessions}${t("options_stats_sessions_unit")}`;
+
+    item.append(dateEl, track, value);
+    container.appendChild(item);
+  }
+}
+
+function renderStats(stats: Stats, premium: Premium): void {
+  const now = Date.now();
+  const sevenDays = lastNDays(stats, 7, now);
+  const hasAny =
+    sevenDays.some((d) => d.focus_min > 0 || d.sessions > 0) ||
+    stats.total_sessions > 0;
+
+  if (els.stats7days) {
+    renderChart(els.stats7days, sevenDays);
+  }
+  if (els.statsEmpty) {
+    els.statsEmpty.hidden = hasAny;
+  }
+
+  const premiumOn = hasPremiumAccess(premium, now);
+  if (els.statsPremium) els.statsPremium.hidden = !premiumOn;
+  if (els.statsPremiumUpgrade) els.statsPremiumUpgrade.hidden = premiumOn;
+
+  if (premiumOn) {
+    const range = premiumRange;
+    if (els.statsPremiumChart) {
+      renderChart(els.statsPremiumChart, lastNDays(stats, range, now));
+      els.statsPremiumChart.setAttribute(
+        "aria-labelledby",
+        range === 30 ? "stats-tab-30" : "stats-tab-90",
+      );
+    }
+    if (els.statsTotalFocusMin) {
+      els.statsTotalFocusMin.textContent = String(stats.total_focus_min);
+    }
+    if (els.statsTotalSessions) {
+      els.statsTotalSessions.textContent = String(stats.total_sessions);
+    }
+    if (els.statsTab30) {
+      const active = range === 30;
+      els.statsTab30.classList.toggle("is-active", active);
+      els.statsTab30.setAttribute("aria-selected", active ? "true" : "false");
+    }
+    if (els.statsTab90) {
+      const active = range === 90;
+      els.statsTab90.classList.toggle("is-active", active);
+      els.statsTab90.setAttribute("aria-selected", active ? "true" : "false");
+    }
+  }
+}
+
 async function loadAndRender(): Promise<void> {
-  const { settings, premium } = (await chrome.storage.local.get([
+  const { settings, premium, stats } = (await chrome.storage.local.get([
     "settings",
     "premium",
-  ])) as { settings?: Settings; premium?: Premium };
+    "stats",
+  ])) as { settings?: Settings; premium?: Premium; stats?: Stats };
 
+  const effectivePremium =
+    premium ?? { trial_start_ts: Date.now(), premium_unlocked: false };
   renderForm({ ...DEFAULT_SETTINGS, ...(settings ?? {}) });
-  renderPremium(
-    premium ?? { trial_start_ts: Date.now(), premium_unlocked: false },
+  renderPremium(effectivePremium);
+  renderStats(stats ?? DEFAULT_STATS, effectivePremium);
+}
+
+function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
+  const dialog = els.confirmDialog;
+  const titleEl = els.confirmTitle;
+  const bodyEl = els.confirmBody;
+  if (!dialog || !titleEl || !bodyEl || typeof dialog.showModal !== "function") {
+    // Fall through to `confirm()` so headless / older runtimes still get a
+    // prompt rather than silently destroying data.
+    return Promise.resolve(window.confirm(`${t(titleKey)}\n\n${t(bodyKey)}`));
+  }
+  titleEl.textContent = t(titleKey);
+  bodyEl.textContent = t(bodyKey);
+  return new Promise<boolean>((resolve) => {
+    const onClose = () => {
+      dialog.removeEventListener("close", onClose);
+      resolve(dialog.returnValue === "ok");
+    };
+    dialog.addEventListener("close", onClose);
+    dialog.showModal();
+  });
+}
+
+async function clearStats(): Promise<void> {
+  const ok = await confirmAction(
+    "options_stats_clear_confirm_title",
+    "options_stats_clear_confirm_body",
   );
+  if (!ok) return;
+  await chrome.storage.local.set({ stats: DEFAULT_STATS });
+}
+
+function statsToCsv(stats: Stats): string {
+  const header = "date,focus_min,sessions";
+  const rows = Object.keys(stats.daily)
+    .sort()
+    .map((date) => {
+      const day = stats.daily[date];
+      return `${date},${day.focus_min},${day.sessions}`;
+    });
+  return [header, ...rows].join("\n") + "\n";
+}
+
+async function exportCsv(): Promise<void> {
+  const { stats } = (await chrome.storage.local.get("stats")) as { stats?: Stats };
+  const csv = statsToCsv(stats ?? DEFAULT_STATS);
+  // data: URL keeps us off the `downloads` permission. The CSV is at most
+  // ~100 days × ~30 bytes = ~3KB so the URL length is well within limits.
+  const dataUrl = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
+  const anchor = document.createElement("a");
+  anchor.href = dataUrl;
+  anchor.download = `focus-timer-stats-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
 }
 
 async function saveSettings(): Promise<void> {
@@ -247,12 +419,29 @@ function wireForm(): void {
       els.btnUpgrade.disabled = false;
     }, 600);
   });
+
+  els.btnClearStats?.addEventListener("click", () => {
+    void clearStats();
+  });
+  els.btnExportCsv?.addEventListener("click", () => {
+    void exportCsv();
+  });
+  els.statsTab30?.addEventListener("click", () => {
+    if (premiumRange === 30) return;
+    premiumRange = 30;
+    void loadAndRender();
+  });
+  els.statsTab90?.addEventListener("click", () => {
+    if (premiumRange === 90) return;
+    premiumRange = 90;
+    void loadAndRender();
+  });
 }
 
 function watchStorage(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
-    if ("premium" in changes || "settings" in changes) {
+    if ("premium" in changes || "settings" in changes || "stats" in changes) {
       void loadAndRender();
     }
   });

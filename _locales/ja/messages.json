@@ -52,6 +52,10 @@
     "message": "今日のセッション数",
     "description": "本日完了したセッション数の見出し"
   },
+  "popup_focus_min_today": {
+    "message": "今日の集中分",
+    "description": "本日の集中時間 (分) の見出し"
+  },
   "popup_child_mode": {
     "message": "子供モード",
     "description": "子供モード切替ラベル"
@@ -291,6 +295,79 @@
   "stats_premium_locked": {
     "message": "詳細統計は Premium で解放されます",
     "description": "Premium 機能ロックメッセージ"
+  },
+  "options_stats_7days_title": {
+    "message": "直近7日の集中",
+    "description": "options: 7日サマリのセクション見出し (無料)"
+  },
+  "options_stats_30days_title": {
+    "message": "直近30日の集中",
+    "description": "options: 30日サマリのセクション見出し (Premium)"
+  },
+  "options_stats_90days_title": {
+    "message": "直近90日の集中",
+    "description": "options: 90日サマリのセクション見出し (Premium)"
+  },
+  "options_stats_premium_title": {
+    "message": "詳細な集中サマリ",
+    "description": "options: Premium サマリのセクション見出し"
+  },
+  "options_stats_total_focus_min": {
+    "message": "累計集中分",
+    "description": "options: 累計の集中分のラベル"
+  },
+  "options_stats_total_sessions": {
+    "message": "累計セッション数",
+    "description": "options: 累計のセッション数のラベル"
+  },
+  "options_stats_clear": {
+    "message": "統計をすべて削除",
+    "description": "options: 統計データを全削除するボタン"
+  },
+  "options_stats_clear_confirm_title": {
+    "message": "統計をすべて削除しますか？",
+    "description": "options: 統計削除確認ダイアログのタイトル"
+  },
+  "options_stats_clear_confirm_body": {
+    "message": "保存されている毎日の集中分とセッション数がすべて消えます。元に戻せません。",
+    "description": "options: 統計削除確認ダイアログの本文"
+  },
+  "options_stats_export_csv": {
+    "message": "CSV でエクスポート",
+    "description": "options: 統計を CSV で書き出す (Premium)"
+  },
+  "options_stats_premium_upgrade": {
+    "message": "詳細な集中サマリは Premium で見られます",
+    "description": "options: Premium 未解放時の誘導文"
+  },
+  "options_stats_empty": {
+    "message": "まだ記録がありません。集中セッションを完了すると、ここに表示されます。",
+    "description": "options: 統計データなしの説明"
+  },
+  "options_stats_row_label": {
+    "message": "$DATE$: $MIN$分, $SESSIONS$セッション",
+    "description": "options: 7日/30日/90日サマリ各行のスクリーンリーダー読み上げ",
+    "placeholders": {
+      "date": { "content": "$1", "example": "6月10日" },
+      "min": { "content": "$2", "example": "75" },
+      "sessions": { "content": "$3", "example": "3" }
+    }
+  },
+  "options_stats_minutes_unit": {
+    "message": "分",
+    "description": "options: 統計の分単位"
+  },
+  "options_stats_sessions_unit": {
+    "message": "セッション",
+    "description": "options: 統計のセッション単位"
+  },
+  "options_stats_tab_30": {
+    "message": "30日",
+    "description": "options: Premium サマリの 30日切替タブ"
+  },
+  "options_stats_tab_90": {
+    "message": "90日",
+    "description": "options: Premium サマリの 90日切替タブ"
   },
 
   "common_yes": {

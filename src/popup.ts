@@ -5,6 +5,7 @@
  */
 
 import { applyI18nToDom, t, type MessageKey } from "./i18n";
+import { localDateKey } from "./stats";
 import type { Premium, Settings, Stats, TimerMode, TimerState } from "./storage";
 import {
   currentRemainingMs,
@@ -23,6 +24,7 @@ const els = {
   timeLeft: document.getElementById("time-left") as HTMLElement,
   progress: document.getElementById("timer-progress") as SVGCircleElement | null,
   sessionCount: document.getElementById("session-count") as HTMLElement,
+  focusMinToday: document.getElementById("focus-min-today") as HTMLElement,
   premiumBadge: document.getElementById("premium-badge") as HTMLElement,
   trialBadge: document.getElementById("trial-badge") as HTMLElement,
   btnStart: document.getElementById("btn-start") as HTMLButtonElement,
@@ -71,9 +73,14 @@ function renderTimer(timer: TimerState, settings: Settings): void {
 }
 
 function renderStats(stats: Stats): void {
-  const today = new Date().toISOString().slice(0, 10);
+  // localDateKey matches the key background.ts writes — the toISOString slice
+  // used UTC and would have flipped buckets at the wrong wall-clock moment.
+  const today = localDateKey(Date.now());
   const todayStats = stats.daily?.[today];
   els.sessionCount.textContent = String(todayStats?.sessions ?? 0);
+  if (els.focusMinToday) {
+    els.focusMinToday.textContent = String(todayStats?.focus_min ?? 0);
+  }
 }
 
 function renderPremium(premium: Premium): void {

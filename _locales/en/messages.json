@@ -52,6 +52,10 @@
     "message": "Sessions Today",
     "description": "Heading for sessions completed today"
   },
+  "popup_focus_min_today": {
+    "message": "Today's Focus Minutes",
+    "description": "Heading for focus minutes accumulated today"
+  },
   "popup_child_mode": {
     "message": "Child Mode",
     "description": "Child mode toggle label"
@@ -291,6 +295,79 @@
   "stats_premium_locked": {
     "message": "Detailed stats are unlocked with Premium",
     "description": "Premium feature lock message"
+  },
+  "options_stats_7days_title": {
+    "message": "Last 7 days",
+    "description": "options: 7-day summary section heading (free)"
+  },
+  "options_stats_30days_title": {
+    "message": "Last 30 days",
+    "description": "options: 30-day summary section heading (Premium)"
+  },
+  "options_stats_90days_title": {
+    "message": "Last 90 days",
+    "description": "options: 90-day summary section heading (Premium)"
+  },
+  "options_stats_premium_title": {
+    "message": "Detailed Focus Summary",
+    "description": "options: Premium summary section heading"
+  },
+  "options_stats_total_focus_min": {
+    "message": "Total focus minutes",
+    "description": "options: total focus minutes label"
+  },
+  "options_stats_total_sessions": {
+    "message": "Total sessions",
+    "description": "options: total sessions label"
+  },
+  "options_stats_clear": {
+    "message": "Clear all stats",
+    "description": "options: button to clear all stat data"
+  },
+  "options_stats_clear_confirm_title": {
+    "message": "Clear all stats?",
+    "description": "options: clear-stats confirmation dialog title"
+  },
+  "options_stats_clear_confirm_body": {
+    "message": "All saved daily focus minutes and session counts will be erased. This cannot be undone.",
+    "description": "options: clear-stats confirmation dialog body"
+  },
+  "options_stats_export_csv": {
+    "message": "Export as CSV",
+    "description": "options: export stats as CSV (Premium)"
+  },
+  "options_stats_premium_upgrade": {
+    "message": "Unlock detailed focus summaries with Premium",
+    "description": "options: prompt shown when Premium is locked"
+  },
+  "options_stats_empty": {
+    "message": "No data yet. Complete a focus session and it will show up here.",
+    "description": "options: empty-state for stats"
+  },
+  "options_stats_row_label": {
+    "message": "$DATE$: $MIN$ min, $SESSIONS$ sessions",
+    "description": "options: screen-reader text for one summary row",
+    "placeholders": {
+      "date": { "content": "$1", "example": "Jun 10" },
+      "min": { "content": "$2", "example": "75" },
+      "sessions": { "content": "$3", "example": "3" }
+    }
+  },
+  "options_stats_minutes_unit": {
+    "message": "min",
+    "description": "options: stats minutes unit"
+  },
+  "options_stats_sessions_unit": {
+    "message": "sessions",
+    "description": "options: stats sessions unit"
+  },
+  "options_stats_tab_30": {
+    "message": "30 days",
+    "description": "options: 30-day tab in Premium summary"
+  },
+  "options_stats_tab_90": {
+    "message": "90 days",
+    "description": "options: 90-day tab in Premium summary"
   },
 
   "common_yes": {
