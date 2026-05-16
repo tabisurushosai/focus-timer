@@ -8,7 +8,7 @@
 - [x] T005: _locales/ja/messages.json (appName, appDesc, popup_*, options_* 全項目)
 - [x] T006: _locales/en/messages.json (上記の英訳)
 - [x] T007: icons/icon16.png, icon48.png, icon128.png (シンプルなデザイン、絵文字風 SVG → PNG 変換)
-- [ ] T008: src/i18n.ts (chrome.i18n.getMessage ヘルパ)
+- [x] T008: src/i18n.ts (chrome.i18n.getMessage ヘルパ)
 - [ ] T009: src/background.ts (service_worker 雛形、onInstalled で初期化)
 - [ ] T010: legal/PRIVACY.md, legal/TERMS.md (個人情報非収集、外部送信なし明記)
 
