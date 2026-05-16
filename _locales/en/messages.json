@@ -1,0 +1,312 @@
+{
+  "appName": {
+    "message": "Focus Timer",
+    "description": "Extension name"
+  },
+  "appDesc": {
+    "message": "Pomodoro timer for ADHD/ASD (visual timer, child mode, Premium)",
+    "description": "Extension description (Chrome Web Store / manifest description)"
+  },
+
+  "popup_title": {
+    "message": "Focus Timer",
+    "description": "Popup window title"
+  },
+  "popup_start": {
+    "message": "Start",
+    "description": "Timer start button"
+  },
+  "popup_pause": {
+    "message": "Pause",
+    "description": "Timer pause button"
+  },
+  "popup_resume": {
+    "message": "Resume",
+    "description": "Timer resume button"
+  },
+  "popup_reset": {
+    "message": "Reset",
+    "description": "Timer reset button"
+  },
+  "popup_skip": {
+    "message": "Skip",
+    "description": "Skip the current session"
+  },
+  "popup_mode_work": {
+    "message": "Focus",
+    "description": "Work session label"
+  },
+  "popup_mode_break": {
+    "message": "Break",
+    "description": "Break session label"
+  },
+  "popup_mode_long_break": {
+    "message": "Long Break",
+    "description": "Long break session label"
+  },
+  "popup_time_left": {
+    "message": "Time Left",
+    "description": "Remaining time heading"
+  },
+  "popup_session_count": {
+    "message": "Sessions Today",
+    "description": "Heading for sessions completed today"
+  },
+  "popup_child_mode": {
+    "message": "Child Mode",
+    "description": "Child mode toggle label"
+  },
+  "popup_child_mode_on": {
+    "message": "Child Mode ON",
+    "description": "Label when child mode is enabled"
+  },
+  "popup_child_mode_off": {
+    "message": "Child Mode OFF",
+    "description": "Label when child mode is disabled"
+  },
+  "popup_mute": {
+    "message": "Mute",
+    "description": "Sound mute button"
+  },
+  "popup_unmute": {
+    "message": "Unmute",
+    "description": "Sound unmute button"
+  },
+  "popup_settings": {
+    "message": "Settings",
+    "description": "Link to open settings"
+  },
+  "popup_break_reminder": {
+    "message": "Time for a break",
+    "description": "Break reminder notification title"
+  },
+  "popup_break_reminder_body": {
+    "message": "Move around a little and rest your eyes.",
+    "description": "Break reminder notification body"
+  },
+  "popup_session_complete": {
+    "message": "Session Complete",
+    "description": "Session completion notification title"
+  },
+  "popup_session_complete_body": {
+    "message": "Great job! You stayed focused.",
+    "description": "Session completion notification body"
+  },
+  "popup_premium_badge": {
+    "message": "Premium",
+    "description": "Badge indicating Premium user"
+  },
+  "popup_trial_active": {
+    "message": "Free Trial",
+    "description": "Indicator that free trial is active"
+  },
+  "popup_trial_days_left": {
+    "message": "$DAYS$ days left",
+    "description": "Days remaining in the free trial",
+    "placeholders": {
+      "days": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+
+  "options_title": {
+    "message": "Focus Timer Settings",
+    "description": "Settings page title"
+  },
+  "options_section_timer": {
+    "message": "Timer",
+    "description": "Timer settings section heading"
+  },
+  "options_section_appearance": {
+    "message": "Appearance",
+    "description": "Appearance settings section heading"
+  },
+  "options_section_sound": {
+    "message": "Sound",
+    "description": "Sound settings section heading"
+  },
+  "options_section_notifications": {
+    "message": "Notifications",
+    "description": "Notification settings section heading"
+  },
+  "options_section_premium": {
+    "message": "Premium",
+    "description": "Premium settings section heading"
+  },
+  "options_work_duration": {
+    "message": "Focus Duration (min)",
+    "description": "Focus session length setting"
+  },
+  "options_break_duration": {
+    "message": "Break Duration (min)",
+    "description": "Break session length setting"
+  },
+  "options_long_break_duration": {
+    "message": "Long Break Duration (min)",
+    "description": "Long break length setting"
+  },
+  "options_sessions_until_long_break": {
+    "message": "Sessions Until Long Break",
+    "description": "Sessions required before a long break"
+  },
+  "options_auto_start_break": {
+    "message": "Auto-start Break",
+    "description": "Auto-start break after focus session ends"
+  },
+  "options_auto_start_work": {
+    "message": "Auto-start Focus",
+    "description": "Auto-start focus session after break ends"
+  },
+  "options_theme": {
+    "message": "Theme",
+    "description": "Theme selection label"
+  },
+  "options_theme_light": {
+    "message": "Light",
+    "description": "Light theme"
+  },
+  "options_theme_dark": {
+    "message": "Dark",
+    "description": "Dark theme"
+  },
+  "options_theme_system": {
+    "message": "Match System",
+    "description": "Follow system theme"
+  },
+  "options_sound_enabled": {
+    "message": "Enable Sound",
+    "description": "Sound enable toggle"
+  },
+  "options_sound_volume": {
+    "message": "Volume",
+    "description": "Volume setting"
+  },
+  "options_notification_enabled": {
+    "message": "Enable Notifications",
+    "description": "Notifications enable toggle"
+  },
+  "options_break_reminder_enabled": {
+    "message": "Enable Break Reminder",
+    "description": "Break reminder enable toggle"
+  },
+  "options_child_mode_label": {
+    "message": "Child Mode",
+    "description": "Child mode setting label"
+  },
+  "options_child_mode_desc": {
+    "message": "Switches to gentle colors, large text, and simple controls.",
+    "description": "Description of child mode"
+  },
+  "options_language": {
+    "message": "Language",
+    "description": "Language setting label"
+  },
+  "options_save": {
+    "message": "Save",
+    "description": "Save settings button"
+  },
+  "options_saved": {
+    "message": "Saved",
+    "description": "Saved confirmation message"
+  },
+  "options_reset_defaults": {
+    "message": "Reset to Defaults",
+    "description": "Reset settings to defaults button"
+  },
+  "options_premium_status_free": {
+    "message": "Free Plan",
+    "description": "Free plan indicator"
+  },
+  "options_premium_status_trial": {
+    "message": "Free Trial",
+    "description": "Trial active indicator"
+  },
+  "options_premium_status_unlocked": {
+    "message": "Premium Unlocked",
+    "description": "Premium unlocked indicator"
+  },
+  "options_premium_upgrade": {
+    "message": "Upgrade to Premium",
+    "description": "Premium upgrade button"
+  },
+  "options_premium_price": {
+    "message": "$3 USD one-time purchase",
+    "description": "Premium price display"
+  },
+  "options_premium_features": {
+    "message": "Detailed stats, unlimited customization, extra themes, and more",
+    "description": "Premium features description"
+  },
+  "options_privacy_link": {
+    "message": "Privacy Policy",
+    "description": "Link to the privacy policy"
+  },
+  "options_terms_link": {
+    "message": "Terms of Service",
+    "description": "Link to the terms of service"
+  },
+
+  "stats_title": {
+    "message": "Statistics",
+    "description": "Statistics page title"
+  },
+  "stats_today": {
+    "message": "Today",
+    "description": "Today's statistics"
+  },
+  "stats_week": {
+    "message": "This Week",
+    "description": "This week's statistics"
+  },
+  "stats_all_time": {
+    "message": "All Time",
+    "description": "All-time statistics"
+  },
+  "stats_focus_minutes": {
+    "message": "Focus Minutes",
+    "description": "Total focus time"
+  },
+  "stats_sessions_completed": {
+    "message": "Sessions Completed",
+    "description": "Number of completed sessions"
+  },
+  "stats_premium_locked": {
+    "message": "Detailed stats are unlocked with Premium",
+    "description": "Premium feature lock message"
+  },
+
+  "common_yes": {
+    "message": "Yes",
+    "description": "Generic Yes"
+  },
+  "common_no": {
+    "message": "No",
+    "description": "Generic No"
+  },
+  "common_close": {
+    "message": "Close",
+    "description": "Generic Close"
+  },
+  "common_cancel": {
+    "message": "Cancel",
+    "description": "Generic Cancel"
+  },
+  "common_ok": {
+    "message": "OK",
+    "description": "Generic OK"
+  },
+  "common_error": {
+    "message": "An error occurred",
+    "description": "Generic error message"
+  },
+  "common_minutes": {
+    "message": "min",
+    "description": "Time unit: minutes"
+  },
+  "common_seconds": {
+    "message": "sec",
+    "description": "Time unit: seconds"
+  }
+}
