@@ -13,7 +13,7 @@
 - [x] T010: legal/PRIVACY.md, legal/TERMS.md (個人情報非収集、外部送信なし明記)
 
 ## Phase 2: UI 基盤 (T011-T015)
-- [ ] T011: src/popup.html (基本レイアウト、i18n attr)
+- [x] T011: src/popup.html (基本レイアウト、i18n attr)
 - [ ] T012: src/popup.css (シンプル・アクセシブル、ダークモード対応)
 - [ ] T013: src/popup.ts (popup を起動時に表示、i18n 適用)
 - [ ] T014: src/options.html, options.ts (必要なら、設定UI)

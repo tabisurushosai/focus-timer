@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n-title="popup_title">集中タイマー</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body class="theme-system">
+    <main class="popup" role="main" aria-labelledby="popup-heading">
+      <header class="popup__header">
+        <h1 id="popup-heading" class="popup__title" data-i18n="popup_title">集中タイマー</h1>
+        <div class="popup__badges">
+          <span
+            class="badge badge--premium is-hidden"
+            id="premium-badge"
+            data-i18n="popup_premium_badge"
+            hidden
+            >Premium</span
+          >
+          <span
+            class="badge badge--trial is-hidden"
+            id="trial-badge"
+            data-i18n="popup_trial_active"
+            hidden
+            >無料お試し中</span
+          >
+        </div>
+      </header>
+
+      <section class="popup__mode" aria-live="polite">
+        <span class="mode-label" id="mode-label" data-i18n="popup_mode_work">集中時間</span>
+      </section>
+
+      <section
+        class="popup__timer"
+        aria-labelledby="time-left-heading"
+        role="timer"
+        aria-live="polite"
+      >
+        <div class="timer">
+          <svg
+            class="timer__visual"
+            viewBox="0 0 200 200"
+            role="img"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle
+              class="timer__track"
+              cx="100"
+              cy="100"
+              r="92"
+              fill="none"
+              stroke-width="12"
+            />
+            <circle
+              class="timer__progress"
+              id="timer-progress"
+              cx="100"
+              cy="100"
+              r="92"
+              fill="none"
+              stroke-width="12"
+              stroke-linecap="round"
+              transform="rotate(-90 100 100)"
+              stroke-dasharray="578"
+              stroke-dashoffset="0"
+            />
+          </svg>
+          <div class="timer__readout">
+            <span class="timer__readout-label" data-i18n="popup_time_left">残り時間</span>
+            <span class="timer__readout-time" id="time-left" aria-live="polite">25:00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="popup__controls" aria-label="timer controls">
+        <button
+          type="button"
+          class="btn btn--primary"
+          id="btn-start"
+          data-i18n="popup_start"
+          data-i18n-attr="aria-label:popup_start"
+        >
+          開始
+        </button>
+        <button
+          type="button"
+          class="btn"
+          id="btn-pause"
+          data-i18n="popup_pause"
+          data-i18n-attr="aria-label:popup_pause"
+          hidden
+        >
+          一時停止
+        </button>
+        <button
+          type="button"
+          class="btn"
+          id="btn-resume"
+          data-i18n="popup_resume"
+          data-i18n-attr="aria-label:popup_resume"
+          hidden
+        >
+          再開
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="btn-reset"
+          data-i18n="popup_reset"
+          data-i18n-attr="aria-label:popup_reset"
+        >
+          リセット
+        </button>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="btn-skip"
+          data-i18n="popup_skip"
+          data-i18n-attr="aria-label:popup_skip"
+        >
+          スキップ
+        </button>
+      </section>
+
+      <section class="popup__meta">
+        <div class="meta-row">
+          <span class="meta-row__label" data-i18n="popup_session_count">今日のセッション数</span>
+          <span class="meta-row__value" id="session-count">0</span>
+        </div>
+      </section>
+
+      <section class="popup__toggles" aria-label="quick toggles">
+        <label class="toggle">
+          <input type="checkbox" id="toggle-child-mode" />
+          <span class="toggle__label" data-i18n="popup_child_mode">子供モード</span>
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="toggle-mute" />
+          <span class="toggle__label" data-i18n="popup_mute">ミュート</span>
+        </label>
+      </section>
+
+      <footer class="popup__footer">
+        <a
+          href="#"
+          id="open-options"
+          class="link"
+          data-i18n="popup_settings"
+          data-i18n-attr="aria-label:popup_settings"
+          >設定</a
+        >
+      </footer>
+    </main>
+
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>
