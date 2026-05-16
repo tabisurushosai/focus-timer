@@ -5,7 +5,7 @@
 - [x] T002: tsconfig.json (target ES2020, strict, jsx none)
 - [x] T003: vite.config.ts (Chrome 拡張用ビルド設定、entry: popup + background + content)
 - [x] T004: manifest.json (V3, name は __MSG_appName__、description は __MSG_appDesc__、default_locale ja、icons 3サイズ、permissions は機能要件最小限)
-- [ ] T005: _locales/ja/messages.json (appName, appDesc, popup_*, options_* 全項目)
+- [x] T005: _locales/ja/messages.json (appName, appDesc, popup_*, options_* 全項目)
 - [ ] T006: _locales/en/messages.json (上記の英訳)
 - [ ] T007: icons/icon16.png, icon48.png, icon128.png (シンプルなデザイン、絵文字風 SVG → PNG 変換)
 - [ ] T008: src/i18n.ts (chrome.i18n.getMessage ヘルパ)

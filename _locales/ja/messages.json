@@ -1,0 +1,312 @@
+{
+  "appName": {
+    "message": "集中タイマー",
+    "description": "拡張機能の名前"
+  },
+  "appDesc": {
+    "message": "ADHD/ASD向けポモドーロタイマー (視覚タイマー、子供モード、Premium)",
+    "description": "拡張機能の説明 (Chrome Web Store / manifest description)"
+  },
+
+  "popup_title": {
+    "message": "集中タイマー",
+    "description": "ポップアップ画面のタイトル"
+  },
+  "popup_start": {
+    "message": "開始",
+    "description": "タイマー開始ボタン"
+  },
+  "popup_pause": {
+    "message": "一時停止",
+    "description": "タイマー一時停止ボタン"
+  },
+  "popup_resume": {
+    "message": "再開",
+    "description": "タイマー再開ボタン"
+  },
+  "popup_reset": {
+    "message": "リセット",
+    "description": "タイマーリセットボタン"
+  },
+  "popup_skip": {
+    "message": "スキップ",
+    "description": "現在のセッションをスキップ"
+  },
+  "popup_mode_work": {
+    "message": "集中時間",
+    "description": "作業セッションのラベル"
+  },
+  "popup_mode_break": {
+    "message": "休憩時間",
+    "description": "休憩セッションのラベル"
+  },
+  "popup_mode_long_break": {
+    "message": "長い休憩",
+    "description": "長い休憩セッションのラベル"
+  },
+  "popup_time_left": {
+    "message": "残り時間",
+    "description": "残り時間表示の見出し"
+  },
+  "popup_session_count": {
+    "message": "今日のセッション数",
+    "description": "本日完了したセッション数の見出し"
+  },
+  "popup_child_mode": {
+    "message": "子供モード",
+    "description": "子供モード切替ラベル"
+  },
+  "popup_child_mode_on": {
+    "message": "子供モード ON",
+    "description": "子供モード有効時のラベル"
+  },
+  "popup_child_mode_off": {
+    "message": "子供モード OFF",
+    "description": "子供モード無効時のラベル"
+  },
+  "popup_mute": {
+    "message": "ミュート",
+    "description": "サウンドミュートボタン"
+  },
+  "popup_unmute": {
+    "message": "ミュート解除",
+    "description": "サウンドミュート解除ボタン"
+  },
+  "popup_settings": {
+    "message": "設定",
+    "description": "設定画面を開くリンク"
+  },
+  "popup_break_reminder": {
+    "message": "休憩しましょう",
+    "description": "休憩リマインダー通知タイトル"
+  },
+  "popup_break_reminder_body": {
+    "message": "少し体を動かして、目を休めてください。",
+    "description": "休憩リマインダー通知本文"
+  },
+  "popup_session_complete": {
+    "message": "セッション完了",
+    "description": "セッション完了通知タイトル"
+  },
+  "popup_session_complete_body": {
+    "message": "おつかれさま！よく集中できました。",
+    "description": "セッション完了通知本文"
+  },
+  "popup_premium_badge": {
+    "message": "Premium",
+    "description": "Premium ユーザーを示すバッジ"
+  },
+  "popup_trial_active": {
+    "message": "無料お試し中",
+    "description": "無料お試し中の表示"
+  },
+  "popup_trial_days_left": {
+    "message": "残り $DAYS$ 日",
+    "description": "無料お試しの残り日数",
+    "placeholders": {
+      "days": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+
+  "options_title": {
+    "message": "集中タイマー 設定",
+    "description": "設定画面のタイトル"
+  },
+  "options_section_timer": {
+    "message": "タイマー設定",
+    "description": "タイマー設定セクション見出し"
+  },
+  "options_section_appearance": {
+    "message": "外観",
+    "description": "外観設定セクション見出し"
+  },
+  "options_section_sound": {
+    "message": "サウンド",
+    "description": "サウンド設定セクション見出し"
+  },
+  "options_section_notifications": {
+    "message": "通知",
+    "description": "通知設定セクション見出し"
+  },
+  "options_section_premium": {
+    "message": "Premium",
+    "description": "Premium 設定セクション見出し"
+  },
+  "options_work_duration": {
+    "message": "集中時間 (分)",
+    "description": "集中セッションの長さ設定"
+  },
+  "options_break_duration": {
+    "message": "休憩時間 (分)",
+    "description": "休憩セッションの長さ設定"
+  },
+  "options_long_break_duration": {
+    "message": "長い休憩時間 (分)",
+    "description": "長い休憩の長さ設定"
+  },
+  "options_sessions_until_long_break": {
+    "message": "長い休憩までのセッション数",
+    "description": "長い休憩までに必要なセッション数"
+  },
+  "options_auto_start_break": {
+    "message": "休憩を自動開始する",
+    "description": "集中時間終了後に休憩を自動開始"
+  },
+  "options_auto_start_work": {
+    "message": "集中を自動開始する",
+    "description": "休憩終了後に集中時間を自動開始"
+  },
+  "options_theme": {
+    "message": "テーマ",
+    "description": "テーマ選択ラベル"
+  },
+  "options_theme_light": {
+    "message": "ライト",
+    "description": "ライトテーマ"
+  },
+  "options_theme_dark": {
+    "message": "ダーク",
+    "description": "ダークテーマ"
+  },
+  "options_theme_system": {
+    "message": "システムに合わせる",
+    "description": "システム設定に追従するテーマ"
+  },
+  "options_sound_enabled": {
+    "message": "サウンドを有効にする",
+    "description": "サウンド有効化トグル"
+  },
+  "options_sound_volume": {
+    "message": "音量",
+    "description": "音量設定"
+  },
+  "options_notification_enabled": {
+    "message": "通知を有効にする",
+    "description": "通知有効化トグル"
+  },
+  "options_break_reminder_enabled": {
+    "message": "休憩リマインダーを有効にする",
+    "description": "休憩リマインダー有効化トグル"
+  },
+  "options_child_mode_label": {
+    "message": "子供モード",
+    "description": "子供モード設定ラベル"
+  },
+  "options_child_mode_desc": {
+    "message": "やさしい色合いと大きな文字、シンプルな操作に切り替えます。",
+    "description": "子供モードの説明"
+  },
+  "options_language": {
+    "message": "言語",
+    "description": "言語設定ラベル"
+  },
+  "options_save": {
+    "message": "保存",
+    "description": "設定保存ボタン"
+  },
+  "options_saved": {
+    "message": "保存しました",
+    "description": "保存完了メッセージ"
+  },
+  "options_reset_defaults": {
+    "message": "初期値に戻す",
+    "description": "設定を初期値に戻すボタン"
+  },
+  "options_premium_status_free": {
+    "message": "無料プラン",
+    "description": "無料プラン表示"
+  },
+  "options_premium_status_trial": {
+    "message": "無料お試し中",
+    "description": "お試し中表示"
+  },
+  "options_premium_status_unlocked": {
+    "message": "Premium 解放済み",
+    "description": "Premium 解放済み表示"
+  },
+  "options_premium_upgrade": {
+    "message": "Premium にアップグレード",
+    "description": "Premium アップグレードボタン"
+  },
+  "options_premium_price": {
+    "message": "$3 USD 買い切り",
+    "description": "Premium 価格表示"
+  },
+  "options_premium_features": {
+    "message": "詳細統計・無制限カスタマイズ・拡張テーマなど",
+    "description": "Premium 機能の説明"
+  },
+  "options_privacy_link": {
+    "message": "プライバシーポリシー",
+    "description": "プライバシーポリシーへのリンク"
+  },
+  "options_terms_link": {
+    "message": "利用規約",
+    "description": "利用規約へのリンク"
+  },
+
+  "stats_title": {
+    "message": "統計",
+    "description": "統計画面のタイトル"
+  },
+  "stats_today": {
+    "message": "今日",
+    "description": "今日の統計"
+  },
+  "stats_week": {
+    "message": "今週",
+    "description": "今週の統計"
+  },
+  "stats_all_time": {
+    "message": "累計",
+    "description": "累計の統計"
+  },
+  "stats_focus_minutes": {
+    "message": "集中時間 (分)",
+    "description": "集中合計時間"
+  },
+  "stats_sessions_completed": {
+    "message": "完了セッション数",
+    "description": "完了したセッション数"
+  },
+  "stats_premium_locked": {
+    "message": "詳細統計は Premium で解放されます",
+    "description": "Premium 機能ロックメッセージ"
+  },
+
+  "common_yes": {
+    "message": "はい",
+    "description": "汎用 はい"
+  },
+  "common_no": {
+    "message": "いいえ",
+    "description": "汎用 いいえ"
+  },
+  "common_close": {
+    "message": "閉じる",
+    "description": "汎用 閉じる"
+  },
+  "common_cancel": {
+    "message": "キャンセル",
+    "description": "汎用 キャンセル"
+  },
+  "common_ok": {
+    "message": "OK",
+    "description": "汎用 OK"
+  },
+  "common_error": {
+    "message": "エラーが発生しました",
+    "description": "汎用 エラーメッセージ"
+  },
+  "common_minutes": {
+    "message": "分",
+    "description": "時間単位 分"
+  },
+  "common_seconds": {
+    "message": "秒",
+    "description": "時間単位 秒"
+  }
+}
