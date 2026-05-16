@@ -96,7 +96,15 @@ function currentRemainingMs(timer: TimerState): number {
   return Math.max(0, timer.remaining_ms);
 }
 
+function applyModeClass(mode: TimerMode): void {
+  els.body.classList.remove("mode-work", "mode-break", "mode-long-break");
+  els.body.classList.add(
+    mode === "break" ? "mode-break" : mode === "long_break" ? "mode-long-break" : "mode-work",
+  );
+}
+
 function renderTimer(timer: TimerState, settings: Settings): void {
+  applyModeClass(timer.mode);
   els.modeLabel.textContent = t(modeKey(timer.mode));
 
   const remaining = currentRemainingMs(timer);

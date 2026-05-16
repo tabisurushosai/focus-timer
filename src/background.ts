@@ -1,141 +1,270 @@
 /**
  * background.ts — Manifest V3 service_worker entry point.
- * Keep handlers short; the service worker is unloaded when idle.
+ *
+ * Source of truth for the running timer. Holds no in-memory state: every
+ * mutation is persisted to chrome.storage.local and the next phase boundary is
+ * registered with chrome.alarms so the worker can be torn down and rebuilt
+ * without drift. Popup/options observe storage and never compute phase logic.
  */
 
-const ALARM_TICK = "focus-timer:tick";
+import {
+  DEFAULT_SETTINGS,
+  ensureDefaults,
+  get,
+  patch,
+  set,
+  type Settings,
+  type TimerMode,
+  type TimerState,
+} from "./storage";
+
+const ALARM_PHASE_END = "focus-timer:phase-end";
 const ALARM_BREAK_REMINDER = "focus-timer:break-reminder";
 
-type TimerMode = "work" | "break" | "long_break";
+type Command =
+  | { type: "timer_start" }
+  | { type: "timer_pause" }
+  | { type: "timer_resume" }
+  | { type: "timer_reset" }
+  | { type: "timer_skip" };
 
-type TimerState = {
-  mode: TimerMode;
-  running: boolean;
-  // Epoch ms when the current phase should end. 0 when not running.
-  end_ts: number;
-  // Remaining ms captured at pause; used to resume without drift.
-  remaining_ms: number;
-  // Number of completed work sessions since the last long break.
-  session_count: number;
-};
+function totalForMode(mode: TimerMode, settings: Settings): number {
+  const minutes =
+    mode === "break"
+      ? settings.break_min
+      : mode === "long_break"
+        ? settings.long_break_min
+        : settings.work_min;
+  return Math.max(1, minutes) * 60_000;
+}
 
-type Settings = {
-  work_min: number;
-  break_min: number;
-  long_break_min: number;
-  sessions_until_long_break: number;
-  auto_start_break: boolean;
-  auto_start_work: boolean;
-  theme: "light" | "dark" | "system";
-  sound_enabled: boolean;
-  sound_volume: number;
-  notification_enabled: boolean;
-  break_reminder_enabled: boolean;
-  child_mode: boolean;
-  language: "ja" | "en" | "auto";
-};
-
-type Stats = {
-  // Map of YYYY-MM-DD → { focus_min, sessions }.
-  daily: Record<string, { focus_min: number; sessions: number }>;
-  total_focus_min: number;
-  total_sessions: number;
-};
-
-type Premium = {
-  trial_start_ts: number;
-  premium_unlocked: boolean;
-};
-
-const DEFAULT_SETTINGS: Settings = {
-  work_min: 25,
-  break_min: 5,
-  long_break_min: 15,
-  sessions_until_long_break: 4,
-  auto_start_break: false,
-  auto_start_work: false,
-  theme: "system",
-  sound_enabled: true,
-  sound_volume: 0.6,
-  notification_enabled: true,
-  break_reminder_enabled: true,
-  child_mode: false,
-  language: "auto",
-};
-
-const DEFAULT_TIMER: TimerState = {
-  mode: "work",
-  running: false,
-  end_ts: 0,
-  remaining_ms: DEFAULT_SETTINGS.work_min * 60_000,
-  session_count: 0,
-};
-
-const DEFAULT_STATS: Stats = {
-  daily: {},
-  total_focus_min: 0,
-  total_sessions: 0,
-};
-
-async function initializeStorage(): Promise<void> {
-  const existing = await chrome.storage.local.get([
-    "settings",
-    "timer",
-    "stats",
-    "premium",
-  ]);
-
-  const patch: Record<string, unknown> = {};
-  if (!existing.settings) patch.settings = DEFAULT_SETTINGS;
-  if (!existing.timer) patch.timer = DEFAULT_TIMER;
-  if (!existing.stats) patch.stats = DEFAULT_STATS;
-  if (!existing.premium) {
-    const premium: Premium = {
-      trial_start_ts: Date.now(),
-      premium_unlocked: false,
-    };
-    patch.premium = premium;
+function nextMode(
+  mode: TimerMode,
+  completedWorkSessions: number,
+  settings: Settings,
+): TimerMode {
+  if (mode === "work") {
+    const cadence = Math.max(1, settings.sessions_until_long_break);
+    return completedWorkSessions % cadence === 0 ? "long_break" : "break";
   }
-  if (Object.keys(patch).length > 0) {
-    await chrome.storage.local.set(patch);
+  return "work";
+}
+
+async function clearPhaseAlarm(): Promise<void> {
+  await chrome.alarms.clear(ALARM_PHASE_END);
+}
+
+async function schedulePhaseAlarm(endTs: number): Promise<void> {
+  await clearPhaseAlarm();
+  await chrome.alarms.create(ALARM_PHASE_END, { when: endTs });
+}
+
+async function startOrResume(): Promise<void> {
+  const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+  const totalMs = totalForMode(timer.mode, settings);
+  const remaining =
+    timer.remaining_ms > 0 && timer.remaining_ms <= totalMs
+      ? timer.remaining_ms
+      : totalMs;
+  const endTs = Date.now() + remaining;
+  await set("timer", {
+    ...timer,
+    running: true,
+    end_ts: endTs,
+    remaining_ms: remaining,
+  });
+  await schedulePhaseAlarm(endTs);
+}
+
+async function pause(): Promise<void> {
+  const timer = await get("timer");
+  if (!timer.running) return;
+  const remaining = Math.max(0, timer.end_ts - Date.now());
+  await set("timer", {
+    ...timer,
+    running: false,
+    end_ts: 0,
+    remaining_ms: remaining,
+  });
+  await clearPhaseAlarm();
+}
+
+async function reset(): Promise<void> {
+  const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+  await set("timer", {
+    ...timer,
+    running: false,
+    end_ts: 0,
+    remaining_ms: totalForMode(timer.mode, settings),
+  });
+  await clearPhaseAlarm();
+}
+
+async function skip(): Promise<void> {
+  const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+  let sessionCount = timer.session_count;
+  if (timer.mode === "work") {
+    sessionCount = sessionCount + 1;
+  }
+  const next = nextMode(timer.mode, sessionCount, settings);
+  // session_count counts completed work sessions in the current long-break
+  // cycle; reset it the moment a long break starts so the next cycle restarts
+  // cleanly.
+  if (next === "work" && timer.mode === "long_break") {
+    sessionCount = 0;
+  }
+  await set("timer", {
+    mode: next,
+    running: false,
+    end_ts: 0,
+    remaining_ms: totalForMode(next, settings),
+    session_count: sessionCount,
+  });
+  await clearPhaseAlarm();
+}
+
+async function handlePhaseEnd(): Promise<void> {
+  const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+  if (!timer.running) return;
+  let sessionCount = timer.session_count;
+  if (timer.mode === "work") {
+    sessionCount = sessionCount + 1;
+  }
+  const next = nextMode(timer.mode, sessionCount, settings);
+  if (next === "work" && timer.mode === "long_break") {
+    sessionCount = 0;
+  }
+
+  const shouldAutoStart =
+    (next === "work" && settings.auto_start_work) ||
+    ((next === "break" || next === "long_break") && settings.auto_start_break);
+
+  const totalNext = totalForMode(next, settings);
+  if (shouldAutoStart) {
+    const endTs = Date.now() + totalNext;
+    await set("timer", {
+      mode: next,
+      running: true,
+      end_ts: endTs,
+      remaining_ms: totalNext,
+      session_count: sessionCount,
+    });
+    await schedulePhaseAlarm(endTs);
+  } else {
+    await set("timer", {
+      mode: next,
+      running: false,
+      end_ts: 0,
+      remaining_ms: totalNext,
+      session_count: sessionCount,
+    });
+    await clearPhaseAlarm();
   }
 }
 
-chrome.runtime.onInstalled.addListener(async (details) => {
-  await initializeStorage();
-  if (details.reason === "install") {
-    // First install — nothing else to do here yet; popup handles onboarding.
+async function reconcileAfterWake(): Promise<void> {
+  // After service worker wake-up: if running and end_ts already passed (e.g.
+  // OS sleep ate the alarm) flush the phase immediately; otherwise re-register
+  // the alarm so it survives the new worker lifetime.
+  const timer = await get("timer");
+  if (!timer.running) return;
+  if (timer.end_ts <= Date.now()) {
+    await handlePhaseEnd();
+  } else {
+    await schedulePhaseAlarm(timer.end_ts);
   }
+}
+
+async function initialize(): Promise<void> {
+  await ensureDefaults();
+  await reconcileAfterWake();
+}
+
+function isCommand(value: unknown): value is Command {
+  if (!value || typeof value !== "object" || !("type" in value)) return false;
+  const type = (value as { type: unknown }).type;
+  return (
+    type === "timer_start" ||
+    type === "timer_pause" ||
+    type === "timer_resume" ||
+    type === "timer_reset" ||
+    type === "timer_skip"
+  );
+}
+
+async function dispatch(cmd: Command): Promise<void> {
+  switch (cmd.type) {
+    case "timer_start":
+    case "timer_resume":
+      await startOrResume();
+      return;
+    case "timer_pause":
+      await pause();
+      return;
+    case "timer_reset":
+      await reset();
+      return;
+    case "timer_skip":
+      await skip();
+      return;
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  void initialize();
 });
 
-chrome.runtime.onStartup.addListener(async () => {
-  // Ensure defaults exist even if storage was cleared between sessions.
-  await initializeStorage();
+chrome.runtime.onStartup.addListener(() => {
+  void initialize();
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARM_TICK) {
-    // Phase completion is handled here in a later task; skeleton no-op.
+  if (alarm.name === ALARM_PHASE_END) {
+    void handlePhaseEnd();
   } else if (alarm.name === ALARM_BREAK_REMINDER) {
-    // Break reminder fires here in a later task.
+    // Handled in break-reminder task (T028+); ignore here.
   }
+});
+
+// When settings change while the timer is *not* running, refresh remaining_ms
+// to the new phase total so the popup shows the updated duration immediately.
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local" || !("settings" in changes)) return;
+  void (async () => {
+    const timer = await get("timer");
+    if (timer.running) return;
+    const settings = (changes.settings.newValue ?? DEFAULT_SETTINGS) as Settings;
+    const total = totalForMode(timer.mode, settings);
+    if (timer.remaining_ms !== total) {
+      await patch("timer", { remaining_ms: total });
+    }
+  })();
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  // Command surface for popup/options. Concrete handlers land in later tasks.
-  if (!message || typeof message !== "object" || !("type" in message)) {
+  if (!isCommand(message)) {
     sendResponse({ ok: false, error: "invalid_message" });
     return false;
   }
-  sendResponse({ ok: true });
-  return false;
+  dispatch(message).then(
+    () => sendResponse({ ok: true }),
+    (err: unknown) => {
+      const error = err instanceof Error ? err.message : String(err);
+      sendResponse({ ok: false, error });
+    },
+  );
+  return true; // keep the message channel open for the async response
 });
 
-export type { TimerMode, TimerState, Settings, Stats, Premium };
+// Service worker wakes are not guaranteed to fire onStartup (e.g. event-driven
+// re-activation after being unloaded). Run reconciliation at module top level
+// so each wake re-arms the alarm if needed.
+void reconcileAfterWake();
+
 export {
-  ALARM_TICK,
+  ALARM_PHASE_END,
   ALARM_BREAK_REMINDER,
-  DEFAULT_SETTINGS,
-  DEFAULT_TIMER,
-  DEFAULT_STATS,
+  totalForMode,
+  nextMode,
 };
+export type { TimerMode, TimerState, Settings };
