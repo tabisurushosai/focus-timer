@@ -153,7 +153,41 @@
           >設定</a
         >
       </footer>
+
+      <p
+        id="child-mode-announce"
+        class="visually-hidden"
+        role="status"
+        aria-live="polite"
+      ></p>
     </main>
+
+    <dialog id="confirm-action" class="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+      <form method="dialog" class="confirm__form">
+        <h2 id="confirm-title" class="confirm__title"></h2>
+        <p id="confirm-body" class="confirm__body"></p>
+        <div class="confirm__actions">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn btn--ghost"
+            id="confirm-cancel"
+            data-i18n="common_cancel"
+          >
+            キャンセル
+          </button>
+          <button
+            type="submit"
+            value="ok"
+            class="btn btn--primary"
+            id="confirm-ok"
+            data-i18n="common_ok"
+          >
+            OK
+          </button>
+        </div>
+      </form>
+    </dialog>
 
     <script type="module" src="./popup.ts"></script>
   </body>

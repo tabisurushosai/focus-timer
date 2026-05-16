@@ -400,6 +400,8 @@ body.child-mode {
   --color-primary: #ff7ab6;
   --color-progress: #ff7ab6;
   --color-focus-ring: #ff7ab6;
+  --radius-md: 14px;
+  font-size: 15px;
 }
 
 body.child-mode.mode-work {
@@ -425,9 +427,120 @@ body.child-mode .timer__readout-label {
   font-weight: 600;
 }
 
+body.child-mode .btn {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+body.child-mode .toggle {
+  font-size: 15px;
+}
+
+body.child-mode .timer__progress {
+  transition-duration: 0.25s;
+}
+
+body.child-mode :focus-visible {
+  outline-width: 3px;
+}
+
+body.child-mode .popup__title,
+body.child-mode .mode-label,
+body.child-mode .meta-row__value,
+body.child-mode .toggle__label,
+body.child-mode .timer__readout-time {
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (prefers-contrast: more) {
+  body.child-mode {
+    --color-progress: #e1568f;
+    --color-focus-ring: #e1568f;
+  }
+  body.child-mode :focus-visible {
+    outline-width: 4px;
+  }
+  body.child-mode.mode-break {
+    --color-progress: #259a5e;
+  }
+  body.child-mode.mode-long-break {
+    --color-progress: #a259e8;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.confirm {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  padding: 0;
+  max-width: 280px;
+  width: calc(100% - 32px);
+}
+
+.confirm::backdrop {
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.confirm__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  margin: 0;
+}
+
+.confirm__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.confirm__body {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.confirm__actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.confirm__actions .btn {
+  min-width: 88px;
+}
+
+body.child-mode .confirm__title {
+  font-size: 17px;
+}
+
+body.child-mode .confirm__body {
+  font-size: 15px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .timer__progress,
   .btn {
+    transition: none;
+  }
+  body.child-mode .timer__progress {
     transition: none;
   }
 }

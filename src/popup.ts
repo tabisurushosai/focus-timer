@@ -4,7 +4,7 @@
  * Concrete timer logic lives in background.ts (later tasks); this file is the view layer.
  */
 
-import { applyI18nToDom, t } from "./i18n";
+import { applyI18nToDom, t, type MessageKey } from "./i18n";
 import type { Premium, Settings, Stats, TimerMode, TimerState } from "./storage";
 import {
   currentRemainingMs,
@@ -33,7 +33,13 @@ const els = {
   toggleChildMode: document.getElementById("toggle-child-mode") as HTMLInputElement,
   toggleMute: document.getElementById("toggle-mute") as HTMLInputElement,
   openOptions: document.getElementById("open-options") as HTMLAnchorElement,
+  childModeAnnounce: document.getElementById("child-mode-announce") as HTMLElement | null,
+  confirmDialog: document.getElementById("confirm-action") as HTMLDialogElement | null,
+  confirmTitle: document.getElementById("confirm-title") as HTMLElement | null,
+  confirmBody: document.getElementById("confirm-body") as HTMLElement | null,
 };
+
+let childModeApplied: boolean | undefined;
 
 let tickHandle: number | undefined;
 
@@ -98,6 +104,16 @@ function applyTheme(settings: Settings): void {
   els.body.classList.toggle("child-mode", settings.child_mode);
   els.toggleChildMode.checked = settings.child_mode;
   els.toggleMute.checked = !settings.sound_enabled;
+
+  if (childModeApplied !== undefined && childModeApplied !== settings.child_mode) {
+    announceChildMode(settings.child_mode);
+  }
+  childModeApplied = settings.child_mode;
+}
+
+function announceChildMode(on: boolean): void {
+  if (!els.childModeAnnounce) return;
+  els.childModeAnnounce.textContent = t(on ? "popup_child_mode_on" : "popup_child_mode_off");
 }
 
 async function loadAndRender(): Promise<void> {
@@ -155,6 +171,47 @@ async function patchSettings(patch: Partial<Settings>): Promise<void> {
   await chrome.storage.local.set({ settings: next });
 }
 
+function isChildMode(): boolean {
+  return els.body.classList.contains("child-mode");
+}
+
+function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
+  const dialog = els.confirmDialog;
+  const titleEl = els.confirmTitle;
+  const bodyEl = els.confirmBody;
+  if (!dialog || !titleEl || !bodyEl || typeof dialog.showModal !== "function") {
+    // No <dialog> support — fall through to immediate execution so child-mode
+    // never silently swallows the action.
+    return Promise.resolve(true);
+  }
+  titleEl.textContent = t(titleKey);
+  bodyEl.textContent = t(bodyKey);
+  return new Promise<boolean>((resolve) => {
+    const onClose = () => {
+      dialog.removeEventListener("close", onClose);
+      resolve(dialog.returnValue === "ok");
+    };
+    dialog.addEventListener("close", onClose);
+    dialog.showModal();
+  });
+}
+
+async function handleReset(): Promise<void> {
+  if (isChildMode()) {
+    const ok = await confirmAction("popup_confirm_reset_title", "popup_confirm_reset_body");
+    if (!ok) return;
+  }
+  await sendCommand("timer_reset");
+}
+
+async function handleSkip(): Promise<void> {
+  if (isChildMode()) {
+    const ok = await confirmAction("popup_confirm_skip_title", "popup_confirm_skip_body");
+    if (!ok) return;
+  }
+  await sendCommand("timer_skip");
+}
+
 function wireControls(): void {
   els.btnStart.addEventListener("click", () => {
     void sendCommand("timer_start");
@@ -166,10 +223,10 @@ function wireControls(): void {
     void sendCommand("timer_resume");
   });
   els.btnReset.addEventListener("click", () => {
-    void sendCommand("timer_reset");
+    void handleReset();
   });
   els.btnSkip.addEventListener("click", () => {
-    void sendCommand("timer_skip");
+    void handleSkip();
   });
 
   els.toggleChildMode.addEventListener("change", () => {

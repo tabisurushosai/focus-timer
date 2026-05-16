@@ -64,6 +64,22 @@
     "message": "子供モード OFF",
     "description": "子供モード無効時のラベル"
   },
+  "popup_confirm_reset_title": {
+    "message": "タイマーをリセットしますか？",
+    "description": "子供モード: リセット確認ダイアログのタイトル"
+  },
+  "popup_confirm_reset_body": {
+    "message": "残り時間が初期値に戻ります。",
+    "description": "子供モード: リセット確認ダイアログの本文"
+  },
+  "popup_confirm_skip_title": {
+    "message": "次のセッションに進みますか？",
+    "description": "子供モード: スキップ確認ダイアログのタイトル"
+  },
+  "popup_confirm_skip_body": {
+    "message": "いまのセッションは中断されます。",
+    "description": "子供モード: スキップ確認ダイアログの本文"
+  },
   "popup_mute": {
     "message": "ミュート",
     "description": "サウンドミュートボタン"

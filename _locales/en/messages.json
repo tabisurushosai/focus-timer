@@ -64,6 +64,22 @@
     "message": "Child Mode OFF",
     "description": "Label when child mode is disabled"
   },
+  "popup_confirm_reset_title": {
+    "message": "Reset the timer?",
+    "description": "Child mode: reset confirmation dialog title"
+  },
+  "popup_confirm_reset_body": {
+    "message": "The remaining time will return to its starting value.",
+    "description": "Child mode: reset confirmation dialog body"
+  },
+  "popup_confirm_skip_title": {
+    "message": "Skip to the next session?",
+    "description": "Child mode: skip confirmation dialog title"
+  },
+  "popup_confirm_skip_body": {
+    "message": "The current session will be interrupted.",
+    "description": "Child mode: skip confirmation dialog body"
+  },
   "popup_mute": {
     "message": "Mute",
     "description": "Sound mute button"
