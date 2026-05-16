@@ -15,7 +15,7 @@
 ## Phase 2: UI 基盤 (T011-T015)
 - [x] T011: src/popup.html (基本レイアウト、i18n attr)
 - [x] T012: src/popup.css (シンプル・アクセシブル、ダークモード対応)
-- [ ] T013: src/popup.ts (popup を起動時に表示、i18n 適用)
+- [x] T013: src/popup.ts (popup を起動時に表示、i18n 適用)
 - [ ] T014: src/options.html, options.ts (必要なら、設定UI)
 - [ ] T015: src/storage.ts (chrome.storage.local ラッパ、型付き)
 
