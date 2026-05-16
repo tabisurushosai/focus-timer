@@ -25,7 +25,7 @@
 - [x] T018: big-visual-timer — テスト・整合
 - [x] T019: child-mode — 設計
 - [x] T020: child-mode — 実装
-- [ ] T021: child-mode — テスト・整合
+- [x] T021: child-mode — テスト・整合
 - [ ] T022: session-stats — 設計
 - [ ] T023: session-stats — 実装
 - [ ] T024: session-stats — テスト・整合
