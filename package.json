@@ -1,0 +1,17 @@
+{
+  "name": "focus-timer",
+  "version": "0.1.0",
+  "description": "ADHD/ASD-friendly Pomodoro timer Chrome extension (Manifest V3)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "lint": "tsc --noEmit",
+    "package": "npm run build && node scripts/package.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10"
+  }
+}

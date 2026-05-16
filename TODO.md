@@ -1,7 +1,7 @@
 # TODO: 集中タイマー (focus-timer)
 
 ## Phase 1: 基盤セットアップ (T001-T010)
-- [ ] T001: package.json (devDeps: typescript, vite, @types/chrome; scripts: build, lint, package)
+- [x] T001: package.json (devDeps: typescript, vite, @types/chrome; scripts: build, lint, package)
 - [ ] T002: tsconfig.json (target ES2020, strict, jsx none)
 - [ ] T003: vite.config.ts (Chrome 拡張用ビルド設定、entry: popup + background + content)
 - [ ] T004: manifest.json (V3, name は __MSG_appName__、description は __MSG_appDesc__、default_locale ja、icons 3サイズ、permissions は機能要件最小限)

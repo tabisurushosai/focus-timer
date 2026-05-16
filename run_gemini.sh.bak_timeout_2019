@@ -20,7 +20,7 @@ while [ $LOOP_COUNT -lt $MAX_LOOPS ]; do
   PROJ_NAME=$(basename "$PROJ_DIR")
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [$PROJ_NAME Loop $LOOP_COUNT] 残 $REM タスク..." | tee -a logs/gemini_$(date +%Y%m%d).log
 
-  gtimeout 600 gemini -p "Read SPEC.md and TODO.md. Pick the FIRST unchecked TODO (line starting with '- [ ]'). Implement only ONE task. After implementing, update TODO.md to mark [x] for that task. Then git commit with message 'T<id>: <task summary>'. Stack: Manifest V3, TypeScript+Vite, chrome.storage.local, chrome.i18n. No external API (except where explicitly stated in SPEC.md), no personal data collection, ads-free, minimum permissions. Do ONE task only this run. If git is not initialized, run 'git init && git add -A && git commit -m \"chore: initial\"' first." 2>&1 | tee -a logs/gemini_$(date +%Y%m%d).log
+  timeout 600 gemini -p "Read SPEC.md and TODO.md. Pick the FIRST unchecked TODO (line starting with '- [ ]'). Implement only ONE task. After implementing, update TODO.md to mark [x] for that task. Then git commit with message 'T<id>: <task summary>'. Stack: Manifest V3, TypeScript+Vite, chrome.storage.local, chrome.i18n. No external API (except where explicitly stated in SPEC.md), no personal data collection, ads-free, minimum permissions. Do ONE task only this run. If git is not initialized, run 'git init && git add -A && git commit -m \"chore: initial\"' first." 2>&1 | tee -a logs/gemini_$(date +%Y%m%d).log
   RC=${PIPESTATUS[0]}
 
   if [ "$RC" -ne 0 ]; then
