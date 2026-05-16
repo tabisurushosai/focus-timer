@@ -17,6 +17,7 @@ import {
   type TimerMode,
   type TimerState,
 } from "./storage";
+import { nextMode, totalForMode } from "./timer-utils";
 
 const ALARM_PHASE_END = "focus-timer:phase-end";
 const ALARM_BREAK_REMINDER = "focus-timer:break-reminder";
@@ -27,28 +28,6 @@ type Command =
   | { type: "timer_resume" }
   | { type: "timer_reset" }
   | { type: "timer_skip" };
-
-function totalForMode(mode: TimerMode, settings: Settings): number {
-  const minutes =
-    mode === "break"
-      ? settings.break_min
-      : mode === "long_break"
-        ? settings.long_break_min
-        : settings.work_min;
-  return Math.max(1, minutes) * 60_000;
-}
-
-function nextMode(
-  mode: TimerMode,
-  completedWorkSessions: number,
-  settings: Settings,
-): TimerMode {
-  if (mode === "work") {
-    const cadence = Math.max(1, settings.sessions_until_long_break);
-    return completedWorkSessions % cadence === 0 ? "long_break" : "break";
-  }
-  return "work";
-}
 
 async function clearPhaseAlarm(): Promise<void> {
   await chrome.alarms.clear(ALARM_PHASE_END);

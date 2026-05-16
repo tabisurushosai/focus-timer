@@ -7,10 +7,12 @@
   "scripts": {
     "build": "vite build",
     "lint": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types --no-warnings tests/*.test.ts",
     "package": "npm run build && node scripts/package.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.268",
+    "@types/node": "^25.8.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.10"
   }

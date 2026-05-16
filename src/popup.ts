@@ -5,43 +5,14 @@
  */
 
 import { applyI18nToDom, t } from "./i18n";
-
-type TimerMode = "work" | "break" | "long_break";
-
-type TimerState = {
-  mode: TimerMode;
-  running: boolean;
-  end_ts: number;
-  remaining_ms: number;
-  session_count: number;
-};
-
-type Settings = {
-  work_min: number;
-  break_min: number;
-  long_break_min: number;
-  sessions_until_long_break: number;
-  auto_start_break: boolean;
-  auto_start_work: boolean;
-  theme: "light" | "dark" | "system";
-  sound_enabled: boolean;
-  sound_volume: number;
-  notification_enabled: boolean;
-  break_reminder_enabled: boolean;
-  child_mode: boolean;
-  language: "ja" | "en" | "auto";
-};
-
-type Stats = {
-  daily: Record<string, { focus_min: number; sessions: number }>;
-  total_focus_min: number;
-  total_sessions: number;
-};
-
-type Premium = {
-  trial_start_ts: number;
-  premium_unlocked: boolean;
-};
+import type { Premium, Settings, Stats, TimerMode, TimerState } from "./storage";
+import {
+  currentRemainingMs,
+  formatTime,
+  modeKey,
+  progressDashOffset,
+  totalForMode,
+} from "./timer-utils";
 
 const TRIAL_DAYS = 7;
 const TRACK_CIRCUMFERENCE = 2 * Math.PI * 92; // matches r=92 in popup.html
@@ -66,36 +37,6 @@ const els = {
 
 let tickHandle: number | undefined;
 
-function formatTime(ms: number): string {
-  const total = Math.max(0, Math.round(ms / 1000));
-  const mm = Math.floor(total / 60);
-  const ss = total % 60;
-  return `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
-}
-
-function modeKey(mode: TimerMode): "popup_mode_work" | "popup_mode_break" | "popup_mode_long_break" {
-  if (mode === "break") return "popup_mode_break";
-  if (mode === "long_break") return "popup_mode_long_break";
-  return "popup_mode_work";
-}
-
-function totalForMode(mode: TimerMode, settings: Settings): number {
-  const minutes =
-    mode === "break"
-      ? settings.break_min
-      : mode === "long_break"
-        ? settings.long_break_min
-        : settings.work_min;
-  return Math.max(1, minutes) * 60_000;
-}
-
-function currentRemainingMs(timer: TimerState): number {
-  if (timer.running && timer.end_ts > 0) {
-    return Math.max(0, timer.end_ts - Date.now());
-  }
-  return Math.max(0, timer.remaining_ms);
-}
-
 function applyModeClass(mode: TimerMode): void {
   els.body.classList.remove("mode-work", "mode-break", "mode-long-break");
   els.body.classList.add(
@@ -112,8 +53,7 @@ function renderTimer(timer: TimerState, settings: Settings): void {
 
   const total = totalForMode(timer.mode, settings);
   if (els.progress) {
-    const ratio = total > 0 ? remaining / total : 0;
-    const offset = TRACK_CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, ratio)));
+    const offset = progressDashOffset(remaining, total, TRACK_CIRCUMFERENCE);
     els.progress.setAttribute("stroke-dasharray", String(TRACK_CIRCUMFERENCE));
     els.progress.setAttribute("stroke-dashoffset", String(offset));
   }
