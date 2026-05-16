@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/*.zip
+logs/
+.DS_Store
+*.bak
+*.tmp
+.vite/
