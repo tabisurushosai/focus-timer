@@ -36,12 +36,14 @@ const els = {
   toggleMute: document.getElementById("toggle-mute") as HTMLInputElement,
   openOptions: document.getElementById("open-options") as HTMLAnchorElement,
   childModeAnnounce: document.getElementById("child-mode-announce") as HTMLElement | null,
+  soundAnnounce: document.getElementById("sound-announce") as HTMLElement | null,
   confirmDialog: document.getElementById("confirm-action") as HTMLDialogElement | null,
   confirmTitle: document.getElementById("confirm-title") as HTMLElement | null,
   confirmBody: document.getElementById("confirm-body") as HTMLElement | null,
 };
 
 let childModeApplied: boolean | undefined;
+let soundEnabledApplied: boolean | undefined;
 
 let tickHandle: number | undefined;
 
@@ -109,18 +111,37 @@ function applyTheme(settings: Settings): void {
   els.body.classList.remove("theme-system", "theme-light", "theme-dark");
   els.body.classList.add(`theme-${settings.theme}`);
   els.body.classList.toggle("child-mode", settings.child_mode);
+  els.body.classList.toggle("is-muted", !settings.sound_enabled);
   els.toggleChildMode.checked = settings.child_mode;
   els.toggleMute.checked = !settings.sound_enabled;
+  // Label flips meaning when state changes: ON = mute, OFF = unmute hint.
+  const muteLabel = els.toggleMute.parentElement?.querySelector(".toggle__label");
+  if (muteLabel) {
+    muteLabel.textContent = t(settings.sound_enabled ? "popup_mute" : "popup_unmute");
+  }
 
   if (childModeApplied !== undefined && childModeApplied !== settings.child_mode) {
     announceChildMode(settings.child_mode);
   }
   childModeApplied = settings.child_mode;
+
+  if (
+    soundEnabledApplied !== undefined &&
+    soundEnabledApplied !== settings.sound_enabled
+  ) {
+    announceSound(settings.sound_enabled);
+  }
+  soundEnabledApplied = settings.sound_enabled;
 }
 
 function announceChildMode(on: boolean): void {
   if (!els.childModeAnnounce) return;
   els.childModeAnnounce.textContent = t(on ? "popup_child_mode_on" : "popup_child_mode_off");
+}
+
+function announceSound(on: boolean): void {
+  if (!els.soundAnnounce) return;
+  els.soundAnnounce.textContent = t(on ? "popup_sound_on" : "popup_sound_off");
 }
 
 async function loadAndRender(): Promise<void> {

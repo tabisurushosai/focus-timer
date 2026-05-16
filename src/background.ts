@@ -22,6 +22,7 @@ import {
   pruneOldDays,
   recordWorkCompletion,
 } from "./stats";
+import { playPhaseTransition } from "./sound";
 import { nextMode, totalForMode } from "./timer-utils";
 
 const ALARM_PHASE_END = "focus-timer:phase-end";
@@ -114,6 +115,9 @@ async function skip(): Promise<void> {
     session_count: sessionCount,
   });
   await clearPhaseAlarm();
+  // skip() counts as a deliberate phase transition — play the chime for the
+  // mode we're moving into (reset() stays silent: design-sound-mute.md).
+  await playPhaseTransition(next, settings);
 }
 
 async function recordWorkSession(focusMs: number, endTs: number): Promise<void> {
@@ -165,6 +169,7 @@ async function handlePhaseEnd(): Promise<void> {
     });
     await clearPhaseAlarm();
   }
+  await playPhaseTransition(next, settings);
 }
 
 async function reconcileAfterWake(): Promise<void> {
@@ -247,10 +252,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (!isCommand(message)) {
-    sendResponse({ ok: false, error: "invalid_message" });
-    return false;
-  }
+  // Non-command traffic (e.g. the offscreen document's "sound_play"
+  // round-trip) is owned by other listeners — silently opt out so we don't
+  // race them on sendResponse.
+  if (!isCommand(message)) return false;
   dispatch(message).then(
     () => sendResponse({ ok: true }),
     (err: unknown) => {

@@ -11,6 +11,7 @@ import {
   hasPremiumAccess,
   type Stats,
 } from "./storage";
+import { clampVolumeForMode, playPhaseTransition } from "./sound";
 
 type Theme = "light" | "dark" | "system";
 type Language = "ja" | "en" | "auto";
@@ -71,6 +72,8 @@ const els = {
   soundEnabled: document.getElementById("opt-sound-enabled") as HTMLInputElement,
   soundVolume: document.getElementById("opt-sound-volume") as HTMLInputElement,
   soundVolumeOut: document.getElementById("opt-sound-volume-out") as HTMLOutputElement,
+  soundVolumeChildHint: document.getElementById("opt-sound-volume-child-hint") as HTMLElement | null,
+  btnSoundTest: document.getElementById("btn-sound-test") as HTMLButtonElement | null,
   notificationEnabled: document.getElementById("opt-notification-enabled") as HTMLInputElement,
   breakReminderEnabled: document.getElementById("opt-break-reminder-enabled") as HTMLInputElement,
   themeRadios: Array.from(
@@ -110,6 +113,19 @@ function clampVolume(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
+function applySoundUiState(settings: Pick<Settings, "sound_enabled" | "child_mode">): void {
+  // sound_enabled is the master switch — disabling it also disables the volume
+  // slider so the UI matches sound.ts's "no-op when disabled" contract.
+  els.soundVolume.disabled = !settings.sound_enabled;
+  els.soundVolume.classList.toggle("is-disabled", !settings.sound_enabled);
+  if (els.soundVolumeChildHint) {
+    els.soundVolumeChildHint.hidden = !settings.child_mode;
+  }
+  if (els.btnSoundTest) {
+    els.btnSoundTest.disabled = !settings.sound_enabled;
+  }
+}
+
 function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
 }
@@ -133,8 +149,10 @@ function renderForm(settings: Settings): void {
   els.childMode.checked = settings.child_mode;
   els.language.value = settings.language;
   els.soundEnabled.checked = settings.sound_enabled;
-  els.soundVolume.value = String(settings.sound_volume);
-  els.soundVolumeOut.value = `${Math.round(settings.sound_volume * 100)}%`;
+  // Surface the clamp visually so child-mode users see the cap, not the raw value.
+  const displayVolume = clampVolumeForMode(settings.sound_volume, settings.child_mode);
+  els.soundVolume.value = String(displayVolume);
+  els.soundVolumeOut.value = `${Math.round(displayVolume * 100)}%`;
   els.notificationEnabled.checked = settings.notification_enabled;
   els.breakReminderEnabled.checked = settings.break_reminder_enabled;
   for (const radio of els.themeRadios) {
@@ -142,12 +160,19 @@ function renderForm(settings: Settings): void {
   }
   renderTheme(settings.theme);
   els.body.classList.toggle("child-mode", settings.child_mode);
+  applySoundUiState(settings);
 }
 
 function readForm(): Settings {
   const themeRadio = els.themeRadios.find((r) => r.checked);
   const themeValue = themeRadio?.value ?? DEFAULT_SETTINGS.theme;
   const langValue = els.language.value;
+  const childMode = els.childMode.checked;
+  // Persist the clamped value so the cap survives a child-mode toggle later.
+  const volume = clampVolumeForMode(
+    clampVolume(Number(els.soundVolume.value)),
+    childMode,
+  );
 
   return {
     work_min: clampNumber(Number(els.workMin.value), 1, 180, DEFAULT_SETTINGS.work_min),
@@ -168,10 +193,10 @@ function readForm(): Settings {
     auto_start_work: els.autoStartWork.checked,
     theme: isTheme(themeValue) ? themeValue : DEFAULT_SETTINGS.theme,
     sound_enabled: els.soundEnabled.checked,
-    sound_volume: clampVolume(Number(els.soundVolume.value)),
+    sound_volume: volume,
     notification_enabled: els.notificationEnabled.checked,
     break_reminder_enabled: els.breakReminderEnabled.checked,
-    child_mode: els.childMode.checked,
+    child_mode: childMode,
     language: isLanguage(langValue) ? langValue : DEFAULT_SETTINGS.language,
   };
 }
@@ -404,11 +429,48 @@ function wireForm(): void {
   }
   els.childMode.addEventListener("change", () => {
     els.body.classList.toggle("child-mode", els.childMode.checked);
+    // Reapply the cap to the live slider so the preview matches what would be saved.
+    const next = clampVolumeForMode(
+      Number(els.soundVolume.value),
+      els.childMode.checked,
+    );
+    els.soundVolume.value = String(next);
+    els.soundVolumeOut.value = `${Math.round(next * 100)}%`;
+    applySoundUiState({
+      sound_enabled: els.soundEnabled.checked,
+      child_mode: els.childMode.checked,
+    });
+  });
+
+  els.soundEnabled.addEventListener("change", () => {
+    applySoundUiState({
+      sound_enabled: els.soundEnabled.checked,
+      child_mode: els.childMode.checked,
+    });
   });
 
   els.soundVolume.addEventListener("input", () => {
-    const pct = Math.round(Number(els.soundVolume.value) * 100);
-    els.soundVolumeOut.value = `${pct}%`;
+    const next = clampVolumeForMode(
+      Number(els.soundVolume.value),
+      els.childMode.checked,
+    );
+    if (Number(els.soundVolume.value) !== next) {
+      els.soundVolume.value = String(next);
+    }
+    els.soundVolumeOut.value = `${Math.round(next * 100)}%`;
+  });
+
+  els.btnSoundTest?.addEventListener("click", () => {
+    void (async () => {
+      const childMode = els.childMode.checked;
+      const settings = {
+        ...DEFAULT_SETTINGS,
+        sound_enabled: els.soundEnabled.checked,
+        sound_volume: clampVolumeForMode(Number(els.soundVolume.value), childMode),
+        child_mode: childMode,
+      } as Settings;
+      await playPhaseTransition("work", settings);
+    })();
   });
 
   els.btnUpgrade.addEventListener("click", () => {

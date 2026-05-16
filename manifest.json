@@ -29,6 +29,7 @@
   "permissions": [
     "storage",
     "alarms",
-    "notifications"
+    "notifications",
+    "offscreen"
   ]
 }

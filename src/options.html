@@ -130,6 +130,9 @@
           <h2 id="sec-sound-heading" class="options__section-title" data-i18n="options_section_sound">
             サウンド
           </h2>
+          <p class="field__hint" data-i18n="options_sound_hint">
+            フェーズの切り替わりに短い音が鳴ります。
+          </p>
           <label class="toggle">
             <input id="opt-sound-enabled" type="checkbox" />
             <span class="toggle__label" data-i18n="options_sound_enabled">サウンドを有効にする</span>
@@ -146,6 +149,22 @@
             />
             <output id="opt-sound-volume-out" class="field__output" for="opt-sound-volume">60%</output>
           </div>
+          <p
+            id="opt-sound-volume-child-hint"
+            class="field__hint"
+            data-i18n="options_sound_volume_child_hint"
+            hidden
+          >
+            子供モードでは音量の上限が 80% になります。
+          </p>
+          <button
+            type="button"
+            id="btn-sound-test"
+            class="btn btn--ghost"
+            data-i18n="options_sound_test"
+          >
+            テスト再生
+          </button>
         </section>
 
         <section class="options__section" aria-labelledby="sec-notifications-heading">

@@ -92,6 +92,14 @@
     "message": "Unmute",
     "description": "Sound unmute button"
   },
+  "popup_sound_on": {
+    "message": "Sound on",
+    "description": "aria-live announcement when sound is unmuted"
+  },
+  "popup_sound_off": {
+    "message": "Sound off",
+    "description": "aria-live announcement when sound is muted"
+  },
   "popup_settings": {
     "message": "Settings",
     "description": "Link to open settings"
@@ -202,6 +210,18 @@
   "options_sound_volume": {
     "message": "Volume",
     "description": "Volume setting"
+  },
+  "options_sound_hint": {
+    "message": "A short chime plays at each phase change.",
+    "description": "options: explanation of the sound feature"
+  },
+  "options_sound_test": {
+    "message": "Test sound",
+    "description": "options: button to preview the chime"
+  },
+  "options_sound_volume_child_hint": {
+    "message": "Volume is capped at 80% in child mode.",
+    "description": "options: note about the volume cap when child mode is on"
   },
   "options_notification_enabled": {
     "message": "Enable Notifications",

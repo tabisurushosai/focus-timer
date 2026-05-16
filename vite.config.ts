@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, 'src/popup.html'),
         options: resolve(__dirname, 'src/options.html'),
+        offscreen: resolve(__dirname, 'src/offscreen.html'),
         background: resolve(__dirname, 'src/background.ts'),
         content: resolve(__dirname, 'src/content.ts'),
       },

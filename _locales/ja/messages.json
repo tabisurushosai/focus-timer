@@ -92,6 +92,14 @@
     "message": "ミュート解除",
     "description": "サウンドミュート解除ボタン"
   },
+  "popup_sound_on": {
+    "message": "サウンド ON",
+    "description": "ミュート解除時に aria-live で読み上げ"
+  },
+  "popup_sound_off": {
+    "message": "サウンド OFF",
+    "description": "ミュート切替時に aria-live で読み上げ"
+  },
   "popup_settings": {
     "message": "設定",
     "description": "設定画面を開くリンク"
@@ -202,6 +210,18 @@
   "options_sound_volume": {
     "message": "音量",
     "description": "音量設定"
+  },
+  "options_sound_hint": {
+    "message": "フェーズの切り替わりに短い音が鳴ります。",
+    "description": "options: サウンド機能の説明"
+  },
+  "options_sound_test": {
+    "message": "テスト再生",
+    "description": "options: 通知音を試聴するボタン"
+  },
+  "options_sound_volume_child_hint": {
+    "message": "子供モードでは音量の上限が 80% になります。",
+    "description": "options: 子供モード時の音量上限の注意"
   },
   "options_notification_enabled": {
     "message": "通知を有効にする",
