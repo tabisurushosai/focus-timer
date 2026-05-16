@@ -10,7 +10,7 @@
 - [x] T007: icons/icon16.png, icon48.png, icon128.png (シンプルなデザイン、絵文字風 SVG → PNG 変換)
 - [x] T008: src/i18n.ts (chrome.i18n.getMessage ヘルパ)
 - [x] T009: src/background.ts (service_worker 雛形、onInstalled で初期化)
-- [ ] T010: legal/PRIVACY.md, legal/TERMS.md (個人情報非収集、外部送信なし明記)
+- [x] T010: legal/PRIVACY.md, legal/TERMS.md (個人情報非収集、外部送信なし明記)
 
 ## Phase 2: UI 基盤 (T011-T015)
 - [ ] T011: src/popup.html (基本レイアウト、i18n attr)
