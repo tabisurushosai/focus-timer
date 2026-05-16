@@ -31,7 +31,7 @@
 - [x] T024: session-stats — テスト・整合
 - [x] T025: sound-mute — 設計
 - [x] T026: sound-mute — 実装
-- [ ] T027: sound-mute — テスト・整合
+- [x] T027: sound-mute — テスト・整合
 - [ ] T028: break-reminder — 設計
 - [ ] T029: break-reminder — 実装
 - [ ] T030: break-reminder — テスト・整合
