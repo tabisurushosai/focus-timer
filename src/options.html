@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-i18n-title="options_title">設定</title>
+    <link rel="stylesheet" href="./options.css" />
+  </head>
+  <body class="theme-system">
+    <main class="options" role="main" aria-labelledby="options-heading">
+      <header class="options__header">
+        <h1 id="options-heading" class="options__title" data-i18n="options_title">
+          集中タイマー 設定
+        </h1>
+        <p class="options__subtitle" data-i18n="appDesc"></p>
+      </header>
+
+      <form id="options-form" class="options__form" novalidate>
+        <section class="options__section" aria-labelledby="sec-timer-heading">
+          <h2 id="sec-timer-heading" class="options__section-title" data-i18n="options_section_timer">
+            タイマー設定
+          </h2>
+          <div class="field">
+            <label class="field__label" for="opt-work-min" data-i18n="options_work_duration">
+              集中時間 (分)
+            </label>
+            <input
+              id="opt-work-min"
+              class="field__input"
+              type="number"
+              min="1"
+              max="180"
+              step="1"
+              required
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="opt-break-min" data-i18n="options_break_duration">
+              休憩時間 (分)
+            </label>
+            <input
+              id="opt-break-min"
+              class="field__input"
+              type="number"
+              min="1"
+              max="60"
+              step="1"
+              required
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="opt-long-break-min" data-i18n="options_long_break_duration">
+              長い休憩時間 (分)
+            </label>
+            <input
+              id="opt-long-break-min"
+              class="field__input"
+              type="number"
+              min="1"
+              max="120"
+              step="1"
+              required
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="opt-sessions-until-long" data-i18n="options_sessions_until_long_break">
+              長い休憩までのセッション数
+            </label>
+            <input
+              id="opt-sessions-until-long"
+              class="field__input"
+              type="number"
+              min="1"
+              max="12"
+              step="1"
+              required
+            />
+          </div>
+          <label class="toggle">
+            <input id="opt-auto-start-break" type="checkbox" />
+            <span class="toggle__label" data-i18n="options_auto_start_break">休憩を自動開始する</span>
+          </label>
+          <label class="toggle">
+            <input id="opt-auto-start-work" type="checkbox" />
+            <span class="toggle__label" data-i18n="options_auto_start_work">集中を自動開始する</span>
+          </label>
+        </section>
+
+        <section class="options__section" aria-labelledby="sec-appearance-heading">
+          <h2 id="sec-appearance-heading" class="options__section-title" data-i18n="options_section_appearance">
+            外観
+          </h2>
+          <div class="field">
+            <span class="field__label" data-i18n="options_theme">テーマ</span>
+            <div class="radio-group" role="radiogroup" aria-labelledby="sec-appearance-heading">
+              <label class="radio">
+                <input type="radio" name="theme" value="light" />
+                <span data-i18n="options_theme_light">ライト</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="theme" value="dark" />
+                <span data-i18n="options_theme_dark">ダーク</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="theme" value="system" />
+                <span data-i18n="options_theme_system">システムに合わせる</span>
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="toggle">
+              <input id="opt-child-mode" type="checkbox" />
+              <span class="toggle__label" data-i18n="options_child_mode_label">子供モード</span>
+            </label>
+            <p class="field__hint" data-i18n="options_child_mode_desc">
+              やさしい色合いと大きな文字、シンプルな操作に切り替えます。
+            </p>
+          </div>
+          <div class="field">
+            <label class="field__label" for="opt-language" data-i18n="options_language">言語</label>
+            <select id="opt-language" class="field__input">
+              <option value="auto" data-i18n="options_theme_system">システムに合わせる</option>
+              <option value="ja">日本語</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="options__section" aria-labelledby="sec-sound-heading">
+          <h2 id="sec-sound-heading" class="options__section-title" data-i18n="options_section_sound">
+            サウンド
+          </h2>
+          <label class="toggle">
+            <input id="opt-sound-enabled" type="checkbox" />
+            <span class="toggle__label" data-i18n="options_sound_enabled">サウンドを有効にする</span>
+          </label>
+          <div class="field">
+            <label class="field__label" for="opt-sound-volume" data-i18n="options_sound_volume">音量</label>
+            <input
+              id="opt-sound-volume"
+              class="field__input field__input--range"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+            />
+            <output id="opt-sound-volume-out" class="field__output" for="opt-sound-volume">60%</output>
+          </div>
+        </section>
+
+        <section class="options__section" aria-labelledby="sec-notifications-heading">
+          <h2 id="sec-notifications-heading" class="options__section-title" data-i18n="options_section_notifications">
+            通知
+          </h2>
+          <label class="toggle">
+            <input id="opt-notification-enabled" type="checkbox" />
+            <span class="toggle__label" data-i18n="options_notification_enabled">通知を有効にする</span>
+          </label>
+          <label class="toggle">
+            <input id="opt-break-reminder-enabled" type="checkbox" />
+            <span class="toggle__label" data-i18n="options_break_reminder_enabled">休憩リマインダーを有効にする</span>
+          </label>
+        </section>
+
+        <section class="options__section options__section--premium" aria-labelledby="sec-premium-heading">
+          <h2 id="sec-premium-heading" class="options__section-title" data-i18n="options_section_premium">
+            Premium
+          </h2>
+          <p class="premium__status" id="premium-status" data-i18n="options_premium_status_free">無料プラン</p>
+          <p class="premium__price" data-i18n="options_premium_price">$3 USD 買い切り</p>
+          <p class="premium__features" data-i18n="options_premium_features">
+            詳細統計・無制限カスタマイズ・拡張テーマなど
+          </p>
+          <button
+            type="button"
+            id="btn-upgrade"
+            class="btn btn--primary"
+            data-i18n="options_premium_upgrade"
+          >
+            Premium にアップグレード
+          </button>
+        </section>
+
+        <footer class="options__footer">
+          <div class="options__actions">
+            <button type="submit" id="btn-save" class="btn btn--primary" data-i18n="options_save">
+              保存
+            </button>
+            <button type="button" id="btn-reset" class="btn btn--ghost" data-i18n="options_reset_defaults">
+              初期値に戻す
+            </button>
+            <span
+              id="saved-indicator"
+              class="saved-indicator is-hidden"
+              role="status"
+              aria-live="polite"
+              data-i18n="options_saved"
+              hidden
+              >保存しました</span
+            >
+          </div>
+          <nav class="options__links" aria-label="legal">
+            <a
+              href="../legal/PRIVACY.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="options_privacy_link"
+              >プライバシーポリシー</a
+            >
+            <a
+              href="../legal/TERMS.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="options_terms_link"
+              >利用規約</a
+            >
+          </nav>
+        </footer>
+      </form>
+    </main>
+
+    <script type="module" src="./options.ts"></script>
+  </body>
+</html>
