@@ -43,4 +43,4 @@
 
 ## Phase 5: 仕上げ (T034-T035)
 - [x] T034: npm run lint 通過、npm run build 通過
-- [ ] T035: release/focus-timer.zip 生成 (manifest + icons + _locales + dist/)
+- [x] T035: release/focus-timer.zip 生成 (manifest + icons + _locales + dist/)
