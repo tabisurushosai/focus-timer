@@ -11,7 +11,7 @@
  * Design: docs/design-break-reminder.md.
  */
 
-import { t } from "./i18n";
+import { t } from "./i18n.ts";
 import type { Settings } from "./storage";
 
 export const ALARM_BREAK_REMINDER = "focus-timer:break-reminder";

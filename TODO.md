@@ -34,7 +34,7 @@
 - [x] T027: sound-mute — テスト・整合
 - [x] T028: break-reminder — 設計
 - [x] T029: break-reminder — 実装
-- [ ] T030: break-reminder — テスト・整合
+- [x] T030: break-reminder — テスト・整合
 
 ## Phase 4: Premium ゲート (T031-T033)
 - [ ] T031: src/premium.ts (trial_start_ts 管理、is_premium / is_trial 判定関数)
