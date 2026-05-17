@@ -306,6 +306,38 @@
           >
             Premium にアップグレード
           </button>
+          <div class="premium__license" id="premium-license" hidden>
+            <label class="field__label" for="opt-license-key" data-i18n="options_premium_license_label">
+              ライセンスキー
+            </label>
+            <input
+              id="opt-license-key"
+              class="field__input"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              inputmode="text"
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+            />
+            <p class="field__hint" data-i18n="options_premium_license_hint">
+              購入後にメールで届いたライセンスキー (XXXX-XXXX-XXXX-XXXX) を入力してください。
+            </p>
+            <button
+              type="button"
+              id="btn-apply-license"
+              class="btn"
+              data-i18n="options_premium_license_apply"
+            >
+              ライセンスキーを適用
+            </button>
+            <p
+              id="license-feedback"
+              class="field__hint license-feedback"
+              role="status"
+              aria-live="polite"
+              hidden
+            ></p>
+          </div>
         </section>
 
         <footer class="options__footer">

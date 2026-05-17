@@ -20,10 +20,10 @@ import {
   patch,
   set,
   type Premium,
-} from "./storage";
+} from "./storage.ts";
 
-export { TRIAL_DAYS } from "./storage";
-export type { Premium } from "./storage";
+export { TRIAL_DAYS } from "./storage.ts";
+export type { Premium } from "./storage.ts";
 
 /** Three-way status used by UI gates. */
 export type PremiumTier = "premium" | "trial" | "free";

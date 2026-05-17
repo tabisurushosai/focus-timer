@@ -295,6 +295,26 @@
     "message": "Detailed stats, unlimited customization, extra themes, and more",
     "description": "Premium features description"
   },
+  "options_premium_license_label": {
+    "message": "License key",
+    "description": "options: label for the license key input shown after purchase"
+  },
+  "options_premium_license_hint": {
+    "message": "Paste the license key (XXXX-XXXX-XXXX-XXXX) emailed to you after purchase.",
+    "description": "options: helper text for the license key input"
+  },
+  "options_premium_license_apply": {
+    "message": "Apply license key",
+    "description": "options: button that applies a pasted license key"
+  },
+  "options_premium_license_invalid": {
+    "message": "That license key doesn't look right.",
+    "description": "options: error shown when the pasted license key is malformed"
+  },
+  "options_premium_license_applied": {
+    "message": "Premium unlocked — thank you!",
+    "description": "options: success toast after applying a valid license key"
+  },
   "options_privacy_link": {
     "message": "Privacy Policy",
     "description": "Link to the privacy policy"

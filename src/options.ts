@@ -14,6 +14,7 @@ import {
 import { lastNDays } from "./stats";
 import { DEFAULT_STATS, type Stats } from "./storage";
 import { clampVolumeForMode, playPhaseTransition } from "./sound";
+import { applyLicenseKey, openCheckout } from "./upgrade";
 
 type Theme = "light" | "dark" | "system";
 type Language = "ja" | "en" | "auto";
@@ -84,6 +85,10 @@ const els = {
   ),
   premiumStatus: document.getElementById("premium-status") as HTMLElement,
   btnUpgrade: document.getElementById("btn-upgrade") as HTMLButtonElement,
+  premiumLicense: document.getElementById("premium-license") as HTMLElement | null,
+  licenseKey: document.getElementById("opt-license-key") as HTMLInputElement | null,
+  btnApplyLicense: document.getElementById("btn-apply-license") as HTMLButtonElement | null,
+  licenseFeedback: document.getElementById("license-feedback") as HTMLElement | null,
   btnReset: document.getElementById("btn-reset") as HTMLButtonElement,
   savedIndicator: document.getElementById("saved-indicator") as HTMLElement,
   stats7days: document.getElementById("stats-7days") as HTMLElement | null,
@@ -270,6 +275,14 @@ function renderPremium(premium: Premium): void {
   // every selector site.
   els.body.dataset.premiumTier = unlocked ? "premium" : inTrial ? "trial" : "free";
   els.btnUpgrade.disabled = unlocked;
+  // License entry only makes sense before purchase — hide once unlocked so the
+  // section can't accidentally re-trigger the "applied" toast.
+  if (els.premiumLicense) {
+    els.premiumLicense.hidden = unlocked;
+  }
+  if (unlocked && els.licenseFeedback) {
+    els.licenseFeedback.hidden = true;
+  }
 }
 
 function flashSaved(): void {
@@ -446,6 +459,32 @@ async function exportCsv(): Promise<void> {
   anchor.remove();
 }
 
+function showLicenseFeedback(messageKey: MessageKey, kind: "error" | "success"): void {
+  const el = els.licenseFeedback;
+  if (!el) return;
+  el.textContent = t(messageKey);
+  el.classList.toggle("is-error", kind === "error");
+  el.classList.toggle("is-success", kind === "success");
+  el.hidden = false;
+}
+
+async function handleApplyLicense(): Promise<void> {
+  const input = els.licenseKey;
+  if (!input) return;
+  const raw = input.value;
+  const result = await applyLicenseKey(raw);
+  if (result === null) {
+    showLicenseFeedback("options_premium_license_invalid", "error");
+    input.focus();
+    input.select();
+    return;
+  }
+  showLicenseFeedback("options_premium_license_applied", "success");
+  input.value = "";
+  // renderPremium runs via the storage watcher (premium changes), which will
+  // hide the entry section and disable the upgrade button.
+}
+
 async function saveSettings(): Promise<void> {
   const next = readForm();
   await chrome.storage.local.set({ settings: next });
@@ -530,12 +569,25 @@ function wireForm(): void {
   });
 
   els.btnUpgrade.addEventListener("click", () => {
-    // Stripe Checkout wiring lands in T033. Surface a benign placeholder so
-    // the button is interactive without making external requests.
+    // Suppress double-clicks until the new tab actually opens; openCheckout
+    // is fire-and-forget (the user pays in the new tab and pastes the license
+    // key back into the input below).
     els.btnUpgrade.disabled = true;
-    window.setTimeout(() => {
-      els.btnUpgrade.disabled = false;
-    }, 600);
+    void openCheckout().finally(() => {
+      window.setTimeout(() => {
+        els.btnUpgrade.disabled = false;
+      }, 600);
+    });
+  });
+
+  els.btnApplyLicense?.addEventListener("click", () => {
+    void handleApplyLicense();
+  });
+  els.licenseKey?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void handleApplyLicense();
+    }
   });
 
   els.btnClearStats?.addEventListener("click", () => {
