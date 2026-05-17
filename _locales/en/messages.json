@@ -112,6 +112,14 @@
     "message": "Move around a little and rest your eyes.",
     "description": "Break reminder notification body"
   },
+  "popup_break_reminder_idle_title": {
+    "message": "Still on a break?",
+    "description": "Idle break reminder notification title"
+  },
+  "popup_break_reminder_idle_body": {
+    "message": "Ready to refocus?",
+    "description": "Idle break reminder notification body"
+  },
   "popup_session_complete": {
     "message": "Session Complete",
     "description": "Session completion notification title"
@@ -230,6 +238,14 @@
   "options_break_reminder_enabled": {
     "message": "Enable Break Reminder",
     "description": "Break reminder enable toggle"
+  },
+  "options_break_reminder_hint": {
+    "message": "Independent of phase-change notifications; nudges you if a break runs long.",
+    "description": "options: explanation of the break reminder feature"
+  },
+  "options_notification_denied_hint": {
+    "message": "Browser notifications are blocked. Please check your OS settings.",
+    "description": "options: hint shown when browser notifications are denied"
   },
   "options_child_mode_label": {
     "message": "Child Mode",

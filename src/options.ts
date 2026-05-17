@@ -75,7 +75,9 @@ const els = {
   soundVolumeChildHint: document.getElementById("opt-sound-volume-child-hint") as HTMLElement | null,
   btnSoundTest: document.getElementById("btn-sound-test") as HTMLButtonElement | null,
   notificationEnabled: document.getElementById("opt-notification-enabled") as HTMLInputElement,
+  notificationDeniedHint: document.getElementById("opt-notification-denied-hint") as HTMLElement | null,
   breakReminderEnabled: document.getElementById("opt-break-reminder-enabled") as HTMLInputElement,
+  breakReminderHint: document.getElementById("opt-break-reminder-hint") as HTMLElement | null,
   themeRadios: Array.from(
     document.querySelectorAll<HTMLInputElement>('input[name="theme"]'),
   ),
@@ -111,6 +113,43 @@ function clampNumber(value: number, min: number, max: number, fallback: number):
 function clampVolume(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_SETTINGS.sound_volume;
   return Math.min(1, Math.max(0, value));
+}
+
+function applyNotificationUiState(
+  settings: Pick<Settings, "notification_enabled">,
+): void {
+  // Master switch — when notifications are off the dependent reminder toggle
+  // can't do anything, so disable + dim it to match its no-op behavior.
+  const off = !settings.notification_enabled;
+  els.breakReminderEnabled.disabled = off;
+  els.breakReminderEnabled.closest(".toggle")?.classList.toggle("is-disabled", off);
+  els.breakReminderHint?.classList.toggle("is-disabled", off);
+}
+
+function checkNotificationPermission(): void {
+  // chrome.notifications.getPermissionLevel returns "granted" or "denied".
+  // We only surface the denied hint when the user has the master switch on;
+  // otherwise the reminder is intentionally suppressed and the warning would
+  // be confusing.
+  const api = (chrome as unknown as {
+    notifications?: {
+      getPermissionLevel?: (cb: (level: string) => void) => void;
+    };
+  }).notifications;
+  const hint = els.notificationDeniedHint;
+  if (!hint) return;
+  if (!api || typeof api.getPermissionLevel !== "function") {
+    hint.hidden = true;
+    return;
+  }
+  try {
+    api.getPermissionLevel((level) => {
+      const denied = level === "denied" && els.notificationEnabled.checked;
+      hint.hidden = !denied;
+    });
+  } catch {
+    hint.hidden = true;
+  }
 }
 
 function applySoundUiState(settings: Pick<Settings, "sound_enabled" | "child_mode">): void {
@@ -161,6 +200,8 @@ function renderForm(settings: Settings): void {
   renderTheme(settings.theme);
   els.body.classList.toggle("child-mode", settings.child_mode);
   applySoundUiState(settings);
+  applyNotificationUiState(settings);
+  checkNotificationPermission();
 }
 
 function readForm(): Settings {
@@ -447,6 +488,11 @@ function wireForm(): void {
       sound_enabled: els.soundEnabled.checked,
       child_mode: els.childMode.checked,
     });
+  });
+
+  els.notificationEnabled.addEventListener("change", () => {
+    applyNotificationUiState({ notification_enabled: els.notificationEnabled.checked });
+    checkNotificationPermission();
   });
 
   els.soundVolume.addEventListener("input", () => {

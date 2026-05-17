@@ -23,10 +23,17 @@ import {
   recordWorkCompletion,
 } from "./stats";
 import { playPhaseTransition } from "./sound";
+import {
+  ALARM_BREAK_REMINDER,
+  clearBreakReminder,
+  handleBreakReminderAlarm,
+  notifyPhaseTransition,
+  registerNotificationClickHandler,
+  scheduleBreakReminder,
+} from "./notifications";
 import { nextMode, totalForMode } from "./timer-utils";
 
 const ALARM_PHASE_END = "focus-timer:phase-end";
-const ALARM_BREAK_REMINDER = "focus-timer:break-reminder";
 
 type Command =
   | { type: "timer_start" }
@@ -59,6 +66,9 @@ async function startOrResume(): Promise<void> {
     remaining_ms: remaining,
   });
   await schedulePhaseAlarm(endTs);
+  // Manual start/resume in a break phase means the user is engaged — kill any
+  // pending idle-break reminder so it doesn't fire over the running timer.
+  await clearBreakReminder();
 }
 
 async function pause(): Promise<void> {
@@ -83,6 +93,7 @@ async function reset(): Promise<void> {
     remaining_ms: totalForMode(timer.mode, settings),
   });
   await clearPhaseAlarm();
+  await clearBreakReminder();
 }
 
 async function skip(): Promise<void> {
@@ -118,6 +129,8 @@ async function skip(): Promise<void> {
   // skip() counts as a deliberate phase transition — play the chime for the
   // mode we're moving into (reset() stays silent: design-sound-mute.md).
   await playPhaseTransition(next, settings);
+  await notifyPhaseTransition(next, settings);
+  await scheduleBreakReminder(settings, next, Date.now());
 }
 
 async function recordWorkSession(focusMs: number, endTs: number): Promise<void> {
@@ -149,16 +162,17 @@ async function handlePhaseEnd(): Promise<void> {
     ((next === "break" || next === "long_break") && settings.auto_start_break);
 
   const totalNext = totalForMode(next, settings);
+  const nowTs = Date.now();
   if (shouldAutoStart) {
-    const endTs = Date.now() + totalNext;
+    const newEndTs = nowTs + totalNext;
     await set("timer", {
       mode: next,
       running: true,
-      end_ts: endTs,
+      end_ts: newEndTs,
       remaining_ms: totalNext,
       session_count: sessionCount,
     });
-    await schedulePhaseAlarm(endTs);
+    await schedulePhaseAlarm(newEndTs);
   } else {
     await set("timer", {
       mode: next,
@@ -170,6 +184,11 @@ async function handlePhaseEnd(): Promise<void> {
     await clearPhaseAlarm();
   }
   await playPhaseTransition(next, settings);
+  await notifyPhaseTransition(next, settings);
+  // Schedule the idle reminder using the phase boundary (`endTs`) rather than
+  // `Date.now()` so a delayed worker wake doesn't push the nudge into the next
+  // calendar hour. scheduleBreakReminder no-ops when auto-start handles it.
+  await scheduleBreakReminder(settings, next, endTs);
 }
 
 async function reconcileAfterWake(): Promise<void> {
@@ -232,9 +251,14 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_PHASE_END) {
     void handlePhaseEnd();
   } else if (alarm.name === ALARM_BREAK_REMINDER) {
-    // Handled in break-reminder task (T028+); ignore here.
+    void (async () => {
+      const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+      await handleBreakReminderAlarm(settings, timer.mode, timer.running);
+    })();
   }
 });
+
+registerNotificationClickHandler();
 
 // When settings change while the timer is *not* running, refresh remaining_ms
 // to the new phase total so the popup shows the updated duration immediately.

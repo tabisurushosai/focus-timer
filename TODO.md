@@ -33,7 +33,7 @@
 - [x] T026: sound-mute — 実装
 - [x] T027: sound-mute — テスト・整合
 - [x] T028: break-reminder — 設計
-- [ ] T029: break-reminder — 実装
+- [x] T029: break-reminder — 実装
 - [ ] T030: break-reminder — テスト・整合
 
 ## Phase 4: Premium ゲート (T031-T033)

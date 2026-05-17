@@ -112,6 +112,14 @@
     "message": "少し体を動かして、目を休めてください。",
     "description": "休憩リマインダー通知本文"
   },
+  "popup_break_reminder_idle_title": {
+    "message": "休憩、長くなっていませんか？",
+    "description": "アイドル休憩リマインダー通知タイトル"
+  },
+  "popup_break_reminder_idle_body": {
+    "message": "そろそろ集中に戻りましょう。",
+    "description": "アイドル休憩リマインダー通知本文"
+  },
   "popup_session_complete": {
     "message": "セッション完了",
     "description": "セッション完了通知タイトル"
@@ -230,6 +238,14 @@
   "options_break_reminder_enabled": {
     "message": "休憩リマインダーを有効にする",
     "description": "休憩リマインダー有効化トグル"
+  },
+  "options_break_reminder_hint": {
+    "message": "フェーズの切り替わり通知とは別に、休憩を取りすぎた時にお知らせします。",
+    "description": "options: 休憩リマインダー機能の補足説明"
+  },
+  "options_notification_denied_hint": {
+    "message": "ブラウザの通知が許可されていません。OS の設定をご確認ください。",
+    "description": "options: 通知許可が拒否されている場合の案内"
   },
   "options_child_mode_label": {
     "message": "子供モード",

@@ -175,10 +175,26 @@
             <input id="opt-notification-enabled" type="checkbox" />
             <span class="toggle__label" data-i18n="options_notification_enabled">通知を有効にする</span>
           </label>
+          <p
+            id="opt-notification-denied-hint"
+            class="field__hint field__hint--warning"
+            data-i18n="options_notification_denied_hint"
+            role="status"
+            hidden
+          >
+            ブラウザの通知が許可されていません。OS の設定をご確認ください。
+          </p>
           <label class="toggle">
             <input id="opt-break-reminder-enabled" type="checkbox" />
             <span class="toggle__label" data-i18n="options_break_reminder_enabled">休憩リマインダーを有効にする</span>
           </label>
+          <p
+            id="opt-break-reminder-hint"
+            class="field__hint"
+            data-i18n="options_break_reminder_hint"
+          >
+            フェーズの切り替わり通知とは別に、休憩を取りすぎた時にお知らせします。
+          </p>
         </section>
 
         <section class="options__section" aria-labelledby="sec-stats-heading">
