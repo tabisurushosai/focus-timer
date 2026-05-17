@@ -16,11 +16,10 @@ export default defineConfig({
         options: resolve(__dirname, 'src/options.html'),
         offscreen: resolve(__dirname, 'src/offscreen.html'),
         background: resolve(__dirname, 'src/background.ts'),
-        content: resolve(__dirname, 'src/content.ts'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
-          if (chunkInfo.name === 'background' || chunkInfo.name === 'content') {
+          if (chunkInfo.name === 'background') {
             return '[name].js';
           }
           return 'assets/[name].js';

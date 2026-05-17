@@ -42,5 +42,5 @@
 - [x] T033: src/upgrade.ts (Stripe Checkout URL 生成、購入後 chrome.storage に premium_unlocked=true)
 
 ## Phase 5: 仕上げ (T034-T035)
-- [ ] T034: npm run lint 通過、npm run build 通過
+- [x] T034: npm run lint 通過、npm run build 通過
 - [ ] T035: release/focus-timer.zip 生成 (manifest + icons + _locales + dist/)
