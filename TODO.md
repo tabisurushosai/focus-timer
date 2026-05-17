@@ -38,7 +38,7 @@
 
 ## Phase 4: Premium ゲート (T031-T033)
 - [x] T031: src/premium.ts (trial_start_ts 管理、is_premium / is_trial 判定関数)
-- [ ] T032: Premium 機能の UI ゲート (無料: 基本機能のみ、Premium: 詳細統計/無制限)
+- [x] T032: Premium 機能の UI ゲート (無料: 基本機能のみ、Premium: 詳細統計/無制限)
 - [ ] T033: src/upgrade.ts (Stripe Checkout URL 生成、購入後 chrome.storage に premium_unlocked=true)
 
 ## Phase 5: 仕上げ (T034-T035)

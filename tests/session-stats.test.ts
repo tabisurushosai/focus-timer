@@ -330,8 +330,11 @@ describe("session-stats: options wiring", () => {
     assert.match(html, /id="btn-clear-stats"[^>]*data-i18n="options_stats_clear"/);
   });
 
-  it("options.ts gates the Premium block on hasPremiumAccess()", () => {
-    assert.match(src, /import\s*\{[^}]*hasPremiumAccess[^}]*\}\s*from\s*"\.\/storage"/);
+  it("options.ts gates the Premium block on hasPremiumAccess() from ./premium", () => {
+    // T032: hasPremiumAccess moved to the dedicated premium module; the legacy
+    // storage.ts re-export is kept for back-compat but new call sites must pin
+    // against ./premium so future signature changes are caught here.
+    assert.match(src, /import\s*\{[^}]*hasPremiumAccess[^}]*\}\s*from\s*"\.\/premium"/);
     assert.match(src, /hasPremiumAccess\(\s*premium\s*,\s*now\s*\)/);
     assert.match(src, /els\.statsPremium\.hidden\s*=\s*!premiumOn/);
     assert.match(src, /els\.statsPremiumUpgrade\.hidden\s*=\s*premiumOn/);

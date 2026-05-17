@@ -5,12 +5,14 @@
  */
 
 import { applyI18nToDom, t, type MessageKey } from "./i18n";
-import { lastNDays } from "./stats";
 import {
-  DEFAULT_STATS,
   hasPremiumAccess,
-  type Stats,
-} from "./storage";
+  isPremium,
+  isTrial,
+  trialDaysLeft,
+} from "./premium";
+import { lastNDays } from "./stats";
+import { DEFAULT_STATS, type Stats } from "./storage";
 import { clampVolumeForMode, playPhaseTransition } from "./sound";
 
 type Theme = "light" | "dark" | "system";
@@ -37,7 +39,6 @@ type Premium = {
   premium_unlocked: boolean;
 };
 
-const TRIAL_DAYS = 7;
 const SAVED_INDICATOR_MS = 1800;
 
 // Mirrors DEFAULT_SETTINGS in background.ts; kept local to avoid pulling the
@@ -244,22 +245,31 @@ function readForm(): Settings {
 
 function renderPremium(premium: Premium): void {
   const now = Date.now();
-  const trialElapsedDays = premium.trial_start_ts
-    ? (now - premium.trial_start_ts) / 86_400_000
-    : Number.POSITIVE_INFINITY;
-  const inTrial = !premium.premium_unlocked && trialElapsedDays < TRIAL_DAYS;
+  const unlocked = isPremium(premium);
+  const inTrial = isTrial(premium, now);
 
   let key: "options_premium_status_unlocked" | "options_premium_status_trial" | "options_premium_status_free";
-  if (premium.premium_unlocked) {
+  if (unlocked) {
     key = "options_premium_status_unlocked";
   } else if (inTrial) {
     key = "options_premium_status_trial";
   } else {
     key = "options_premium_status_free";
   }
-  els.premiumStatus.textContent = t(key);
+  // Append the day count for trial so the user always knows how long is left
+  // without having to click anywhere; the base i18n string stays short.
+  const baseLabel = t(key);
+  if (inTrial) {
+    const daysLeft = Math.max(1, trialDaysLeft(premium, now));
+    els.premiumStatus.textContent = `${baseLabel} (${t("popup_trial_days_left", String(daysLeft))})`;
+  } else {
+    els.premiumStatus.textContent = baseLabel;
+  }
   els.premiumStatus.dataset.i18n = key;
-  els.btnUpgrade.disabled = premium.premium_unlocked;
+  // Visual tier hint for CSS/tests. Avoids hard-coding the same predicate at
+  // every selector site.
+  els.body.dataset.premiumTier = unlocked ? "premium" : inTrial ? "trial" : "free";
+  els.btnUpgrade.disabled = unlocked;
 }
 
 function flashSaved(): void {

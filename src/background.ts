@@ -31,6 +31,7 @@ import {
   registerNotificationClickHandler,
   scheduleBreakReminder,
 } from "./notifications";
+import { ensureTrialStarted } from "./premium";
 import { nextMode, totalForMode } from "./timer-utils";
 
 const ALARM_PHASE_END = "focus-timer:phase-end";
@@ -206,6 +207,10 @@ async function reconcileAfterWake(): Promise<void> {
 
 async function initialize(): Promise<void> {
   await ensureDefaults();
+  // Bootstrap the trial clock the moment storage is ready so the 7-day window
+  // starts on install, not on the first popup open. ensureTrialStarted is
+  // idempotent — re-running on every wake leaves an existing timestamp alone.
+  await ensureTrialStarted();
   await reconcileAfterWake();
 }
 

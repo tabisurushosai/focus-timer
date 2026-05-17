@@ -5,6 +5,7 @@
  */
 
 import { applyI18nToDom, t, type MessageKey } from "./i18n";
+import { isPremium, isTrial, trialDaysLeft } from "./premium";
 import { localDateKey } from "./stats";
 import type { Premium, Settings, Stats, TimerMode, TimerState } from "./storage";
 import {
@@ -15,7 +16,6 @@ import {
   totalForMode,
 } from "./timer-utils";
 
-const TRIAL_DAYS = 7;
 const TRACK_CIRCUMFERENCE = 2 * Math.PI * 92; // matches r=92 in popup.html
 
 const els = {
@@ -87,20 +87,19 @@ function renderStats(stats: Stats): void {
 
 function renderPremium(premium: Premium): void {
   const now = Date.now();
-  const trialElapsedDays = premium.trial_start_ts
-    ? (now - premium.trial_start_ts) / 86_400_000
-    : Number.POSITIVE_INFINITY;
-  const inTrial = !premium.premium_unlocked && trialElapsedDays < TRIAL_DAYS;
+  const unlocked = isPremium(premium);
+  const inTrial = isTrial(premium, now);
 
-  els.premiumBadge.hidden = !premium.premium_unlocked;
-  els.premiumBadge.classList.toggle("is-hidden", !premium.premium_unlocked);
+  els.premiumBadge.hidden = !unlocked;
+  els.premiumBadge.classList.toggle("is-hidden", !unlocked);
 
   if (inTrial) {
-    const daysLeft = Math.max(1, Math.ceil(TRIAL_DAYS - trialElapsedDays));
+    // trialDaysLeft can return 0 in the final hours; show "1" so the badge
+    // doesn't read "0 days left" before access actually flips off.
+    const daysLeft = Math.max(1, trialDaysLeft(premium, now));
     els.trialBadge.hidden = false;
     els.trialBadge.classList.remove("is-hidden");
-    const label = t("popup_trial_days_left", String(daysLeft));
-    els.trialBadge.textContent = label;
+    els.trialBadge.textContent = t("popup_trial_days_left", String(daysLeft));
   } else {
     els.trialBadge.hidden = true;
     els.trialBadge.classList.add("is-hidden");
