@@ -59,6 +59,13 @@ const usage = readAllUsage();
 
 const errors = [];
 
+const manifestText = (() => {
+  try { return readFileSync(resolve(root, "manifest.json"), "utf8"); } catch { return ""; }
+})();
+const manifestMsgRefs = new Set(
+  [...manifestText.matchAll(/__MSG_([A-Za-z0-9_]+)__/g)].map((m) => m[1])
+);
+
 for (const key of baseKeys) {
   const re = new RegExp(`\\b${key.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}\\b`);
   if (!re.test(usage)) errors.push(`unused: ${key}`);
@@ -68,10 +75,17 @@ const locales = readdirSync(LOCALES_DIR).filter((n) => {
   try { return statSync(join(LOCALES_DIR, n)).isDirectory(); } catch { return false; }
 });
 
+for (const ref of manifestMsgRefs) {
+  if (!(ref in base)) errors.push(`manifest references __MSG_${ref}__ but key missing in ${BASE_LOCALE}`);
+}
+
 for (const locale of locales) {
   if (locale === BASE_LOCALE) continue;
   const data = loadLocale(locale);
   const otherKeys = new Set(Object.keys(data));
+  for (const ref of manifestMsgRefs) {
+    if (!(ref in data)) errors.push(`${locale}: manifest references __MSG_${ref}__ but key missing`);
+  }
   for (const k of baseKeys) {
     if (!otherKeys.has(k)) { errors.push(`${locale}: missing key '${k}'`); continue; }
     const e = base[k];

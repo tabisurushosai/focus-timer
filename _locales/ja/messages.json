@@ -4,8 +4,8 @@
     "description": "拡張機能の名前"
   },
   "appDesc": {
-    "message": "ADHD/ASD向けポモドーロタイマー (視覚タイマー、子供モード、Premium)",
-    "description": "拡張機能の説明 (Chrome Web Store / manifest description)"
+    "message": "ADHD/ASD向けポモドーロタイマー。視覚的なタイマー、カスタム周期、通知音、日次統計、子供モード搭載。完全オフライン動作。",
+    "description": "拡張機能の説明 (Chrome Web Store / manifest description)。最大132文字。"
   },
 
   "popup_title": {

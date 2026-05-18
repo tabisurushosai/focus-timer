@@ -4,8 +4,8 @@
     "description": "Extension name"
   },
   "appDesc": {
-    "message": "Pomodoro timer for ADHD/ASD (visual timer, child mode, Premium)",
-    "description": "Extension description (Chrome Web Store / manifest description)"
+    "message": "Pomodoro timer for ADHD/ASD. Visual timer, customizable cycles, sound chimes, daily stats, child mode. Works fully offline.",
+    "description": "Extension description (Chrome Web Store / manifest description). Max 132 chars."
   },
 
   "popup_title": {
