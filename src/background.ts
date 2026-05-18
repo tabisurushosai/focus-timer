@@ -45,13 +45,21 @@ type Command =
 
 /** Clear any pending phase-end alarm. Idempotent. */
 async function clearPhaseAlarm(): Promise<void> {
-  await chrome.alarms.clear(ALARM_PHASE_END);
+  try {
+    await chrome.alarms.clear(ALARM_PHASE_END);
+  } catch (err) {
+    console.warn("clearPhaseAlarm failed", err);
+  }
 }
 
 /** (Re)schedule the phase-end alarm at the given absolute timestamp. */
 async function schedulePhaseAlarm(endTs: number): Promise<void> {
   await clearPhaseAlarm();
-  await chrome.alarms.create(ALARM_PHASE_END, { when: endTs });
+  try {
+    await chrome.alarms.create(ALARM_PHASE_END, { when: endTs });
+  } catch (err) {
+    console.warn("schedulePhaseAlarm failed", err);
+  }
 }
 
 /**
@@ -288,11 +296,17 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === ALARM_PHASE_END) {
-    void handlePhaseEnd();
+    void handlePhaseEnd().catch((err) => {
+      console.warn("handlePhaseEnd failed", err);
+    });
   } else if (alarm.name === ALARM_BREAK_REMINDER) {
     void (async () => {
-      const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
-      await handleBreakReminderAlarm(settings, timer.mode, timer.running);
+      try {
+        const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
+        await handleBreakReminderAlarm(settings, timer.mode, timer.running);
+      } catch (err) {
+        console.warn("handleBreakReminderAlarm dispatch failed", err);
+      }
     })();
   }
 });

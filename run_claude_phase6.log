@@ -1,9 +1,1 @@
-[12:41:29] [focus-timer phase6 L1] 残15
-T101 完了: README.md に英日で機能一覧 (基本/Premium/i18n)、使用例 (基本フロー / 設定変更 / Premium アップグレード)、開発コマンドを追加。TODO_PHASE6.md の T101 を [x]、commit + push 完了。
-[12:42:47] [focus-timer phase6 L2] 残14
-T102 完了。`src/` 配下の全 12 ファイルの未文書化関数に JSDoc を追加 (i18n.ts はファイルレベルも)。`npm run lint` PASS、commit 3e1625d を main へ push。
-[12:49:39] [focus-timer phase6 L3] 残13
-T103 完了。popup.html/options.html の全 input/button に `data-i18n-attr="aria-label:..."` を追加し、TODO_PHASE6.md を `[x]` に更新、commit `0ab9aa6` を push 済み。
-[12:53:02] [focus-timer phase6 L4] 残12
-T104 完了。stats タブに ARIA tab pattern の Arrow/Home/End キーナビ + roving tabindex を追加、confirm ダイアログ閉鎖後のフォーカス復元を popup/options 両方に実装。型チェック・テスト 304件・ビルドすべて通過、push 済み。
-[12:56:27] [focus-timer phase6 L5] 残11
+[13:06:44] [focus-timer phase6 L1] 残7
