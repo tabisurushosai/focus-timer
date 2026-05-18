@@ -138,11 +138,19 @@
 
       <section class="popup__toggles" aria-label="quick toggles">
         <label class="toggle">
-          <input type="checkbox" id="toggle-child-mode" />
+          <input
+            type="checkbox"
+            id="toggle-child-mode"
+            data-i18n-attr="aria-label:popup_child_mode"
+          />
           <span class="toggle__label" data-i18n="popup_child_mode">子供モード</span>
         </label>
         <label class="toggle">
-          <input type="checkbox" id="toggle-mute" />
+          <input
+            type="checkbox"
+            id="toggle-mute"
+            data-i18n-attr="aria-label:popup_mute"
+          />
           <span class="toggle__label" data-i18n="popup_mute">ミュート</span>
         </label>
       </section>
@@ -183,6 +191,7 @@
             class="btn btn--ghost"
             id="confirm-cancel"
             data-i18n="common_cancel"
+            data-i18n-attr="aria-label:common_cancel"
           >
             キャンセル
           </button>
@@ -192,6 +201,7 @@
             class="btn btn--primary"
             id="confirm-ok"
             data-i18n="common_ok"
+            data-i18n-attr="aria-label:common_ok"
           >
             OK
           </button>

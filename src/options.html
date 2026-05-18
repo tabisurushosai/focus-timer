@@ -32,6 +32,7 @@
               max="180"
               step="1"
               required
+              data-i18n-attr="aria-label:options_work_duration"
             />
           </div>
           <div class="field">
@@ -46,6 +47,7 @@
               max="60"
               step="1"
               required
+              data-i18n-attr="aria-label:options_break_duration"
             />
           </div>
           <div class="field">
@@ -60,6 +62,7 @@
               max="120"
               step="1"
               required
+              data-i18n-attr="aria-label:options_long_break_duration"
             />
           </div>
           <div class="field">
@@ -74,14 +77,23 @@
               max="12"
               step="1"
               required
+              data-i18n-attr="aria-label:options_sessions_until_long_break"
             />
           </div>
           <label class="toggle">
-            <input id="opt-auto-start-break" type="checkbox" />
+            <input
+              id="opt-auto-start-break"
+              type="checkbox"
+              data-i18n-attr="aria-label:options_auto_start_break"
+            />
             <span class="toggle__label" data-i18n="options_auto_start_break">休憩を自動開始する</span>
           </label>
           <label class="toggle">
-            <input id="opt-auto-start-work" type="checkbox" />
+            <input
+              id="opt-auto-start-work"
+              type="checkbox"
+              data-i18n-attr="aria-label:options_auto_start_work"
+            />
             <span class="toggle__label" data-i18n="options_auto_start_work">集中を自動開始する</span>
           </label>
         </section>
@@ -94,22 +106,41 @@
             <span class="field__label" data-i18n="options_theme">テーマ</span>
             <div class="radio-group" role="radiogroup" aria-labelledby="sec-appearance-heading">
               <label class="radio">
-                <input type="radio" name="theme" value="light" />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="light"
+                  data-i18n-attr="aria-label:options_theme_light"
+                />
                 <span data-i18n="options_theme_light">ライト</span>
               </label>
               <label class="radio">
-                <input type="radio" name="theme" value="dark" />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="dark"
+                  data-i18n-attr="aria-label:options_theme_dark"
+                />
                 <span data-i18n="options_theme_dark">ダーク</span>
               </label>
               <label class="radio">
-                <input type="radio" name="theme" value="system" />
+                <input
+                  type="radio"
+                  name="theme"
+                  value="system"
+                  data-i18n-attr="aria-label:options_theme_system"
+                />
                 <span data-i18n="options_theme_system">システムに合わせる</span>
               </label>
             </div>
           </div>
           <div class="field">
             <label class="toggle">
-              <input id="opt-child-mode" type="checkbox" />
+              <input
+                id="opt-child-mode"
+                type="checkbox"
+                data-i18n-attr="aria-label:options_child_mode_label"
+              />
               <span class="toggle__label" data-i18n="options_child_mode_label">子供モード</span>
             </label>
             <p class="field__hint" data-i18n="options_child_mode_desc">
@@ -118,7 +149,11 @@
           </div>
           <div class="field">
             <label class="field__label" for="opt-language" data-i18n="options_language">言語</label>
-            <select id="opt-language" class="field__input">
+            <select
+              id="opt-language"
+              class="field__input"
+              data-i18n-attr="aria-label:options_language"
+            >
               <option value="auto" data-i18n="options_theme_system">システムに合わせる</option>
               <option value="ja">日本語</option>
               <option value="en">English</option>
@@ -134,7 +169,11 @@
             フェーズの切り替わりに短い音が鳴ります。
           </p>
           <label class="toggle">
-            <input id="opt-sound-enabled" type="checkbox" />
+            <input
+              id="opt-sound-enabled"
+              type="checkbox"
+              data-i18n-attr="aria-label:options_sound_enabled"
+            />
             <span class="toggle__label" data-i18n="options_sound_enabled">サウンドを有効にする</span>
           </label>
           <div class="field">
@@ -146,6 +185,7 @@
               min="0"
               max="1"
               step="0.05"
+              data-i18n-attr="aria-label:options_sound_volume"
             />
             <output id="opt-sound-volume-out" class="field__output" for="opt-sound-volume">60%</output>
           </div>
@@ -162,6 +202,7 @@
             id="btn-sound-test"
             class="btn btn--ghost"
             data-i18n="options_sound_test"
+            data-i18n-attr="aria-label:options_sound_test"
           >
             テスト再生
           </button>
@@ -172,7 +213,11 @@
             通知
           </h2>
           <label class="toggle">
-            <input id="opt-notification-enabled" type="checkbox" />
+            <input
+              id="opt-notification-enabled"
+              type="checkbox"
+              data-i18n-attr="aria-label:options_notification_enabled"
+            />
             <span class="toggle__label" data-i18n="options_notification_enabled">通知を有効にする</span>
           </label>
           <p
@@ -185,7 +230,11 @@
             ブラウザの通知が許可されていません。OS の設定をご確認ください。
           </p>
           <label class="toggle">
-            <input id="opt-break-reminder-enabled" type="checkbox" />
+            <input
+              id="opt-break-reminder-enabled"
+              type="checkbox"
+              data-i18n-attr="aria-label:options_break_reminder_enabled"
+            />
             <span class="toggle__label" data-i18n="options_break_reminder_enabled">休憩リマインダーを有効にする</span>
           </label>
           <p
@@ -231,6 +280,7 @@
                 data-range="30"
                 aria-selected="true"
                 data-i18n="options_stats_tab_30"
+                data-i18n-attr="aria-label:options_stats_tab_30"
               >
                 30日
               </button>
@@ -242,6 +292,7 @@
                 data-range="90"
                 aria-selected="false"
                 data-i18n="options_stats_tab_90"
+                data-i18n-attr="aria-label:options_stats_tab_90"
               >
                 90日
               </button>
@@ -267,6 +318,7 @@
               id="btn-export-csv"
               class="btn"
               data-i18n="options_stats_export_csv"
+              data-i18n-attr="aria-label:options_stats_export_csv"
             >
               CSV でエクスポート
             </button>
@@ -284,6 +336,7 @@
             id="btn-clear-stats"
             class="btn btn--ghost stats-clear"
             data-i18n="options_stats_clear"
+            data-i18n-attr="aria-label:options_stats_clear"
           >
             統計をすべて削除
           </button>
@@ -303,6 +356,7 @@
             id="btn-upgrade"
             class="btn btn--primary"
             data-i18n="options_premium_upgrade"
+            data-i18n-attr="aria-label:options_premium_upgrade"
           >
             Premium にアップグレード
           </button>
@@ -318,6 +372,7 @@
               spellcheck="false"
               inputmode="text"
               placeholder="XXXX-XXXX-XXXX-XXXX"
+              data-i18n-attr="aria-label:options_premium_license_label"
             />
             <p class="field__hint" data-i18n="options_premium_license_hint">
               購入後にメールで届いたライセンスキー (XXXX-XXXX-XXXX-XXXX) を入力してください。
@@ -327,6 +382,7 @@
               id="btn-apply-license"
               class="btn"
               data-i18n="options_premium_license_apply"
+              data-i18n-attr="aria-label:options_premium_license_apply"
             >
               ライセンスキーを適用
             </button>
@@ -342,10 +398,22 @@
 
         <footer class="options__footer">
           <div class="options__actions">
-            <button type="submit" id="btn-save" class="btn btn--primary" data-i18n="options_save">
+            <button
+              type="submit"
+              id="btn-save"
+              class="btn btn--primary"
+              data-i18n="options_save"
+              data-i18n-attr="aria-label:options_save"
+            >
               保存
             </button>
-            <button type="button" id="btn-reset" class="btn btn--ghost" data-i18n="options_reset_defaults">
+            <button
+              type="button"
+              id="btn-reset"
+              class="btn btn--ghost"
+              data-i18n="options_reset_defaults"
+              data-i18n-attr="aria-label:options_reset_defaults"
+            >
               初期値に戻す
             </button>
             <span
@@ -393,6 +461,7 @@
             value="cancel"
             class="btn btn--ghost"
             data-i18n="common_cancel"
+            data-i18n-attr="aria-label:common_cancel"
           >
             キャンセル
           </button>
@@ -401,6 +470,7 @@
             value="ok"
             class="btn btn--primary"
             data-i18n="common_ok"
+            data-i18n-attr="aria-label:common_ok"
           >
             OK
           </button>
