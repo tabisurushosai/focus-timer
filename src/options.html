@@ -398,6 +398,50 @@
           </div>
         </section>
 
+        <section class="options__section" aria-labelledby="sec-data-heading">
+          <h2 id="sec-data-heading" class="options__section-title" data-i18n="options_section_data">
+            データのバックアップ
+          </h2>
+          <p class="field__hint" data-i18n="options_data_hint">
+            設定と統計を JSON ファイルとして書き出し、別のデバイスに復元できます。Premium 状態はエクスポートに含まれません。
+          </p>
+          <div class="options__actions">
+            <button
+              type="button"
+              id="btn-export-settings"
+              class="btn"
+              data-i18n="options_data_export"
+              data-i18n-attr="aria-label:options_data_export"
+            >
+              設定をエクスポート
+            </button>
+            <button
+              type="button"
+              id="btn-import-settings"
+              class="btn btn--ghost"
+              data-i18n="options_data_import"
+              data-i18n-attr="aria-label:options_data_import"
+            >
+              設定をインポート
+            </button>
+            <input
+              type="file"
+              id="opt-import-file"
+              accept="application/json,.json"
+              hidden
+              aria-hidden="true"
+              tabindex="-1"
+            />
+          </div>
+          <p
+            id="import-feedback"
+            class="field__hint"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></p>
+        </section>
+
         <footer class="options__footer">
           <div class="options__actions">
             <button

@@ -426,6 +426,39 @@
     "description": "options: 90-day tab in Premium summary"
   },
 
+  "options_section_data": {
+    "message": "Backup",
+    "description": "options: export/import settings & stats section heading"
+  },
+  "options_data_hint": {
+    "message": "Export your settings and stats to a JSON file you can restore on another device. Premium status is not included in the export.",
+    "description": "options: backup section description"
+  },
+  "options_data_export": {
+    "message": "Export settings",
+    "description": "options: export settings/stats as JSON button"
+  },
+  "options_data_import": {
+    "message": "Import settings",
+    "description": "options: import settings/stats from JSON button"
+  },
+  "options_data_import_confirm_title": {
+    "message": "Import settings?",
+    "description": "options: import confirmation dialog title"
+  },
+  "options_data_import_confirm_body": {
+    "message": "Your current settings and stats will be overwritten. This cannot be undone.",
+    "description": "options: import confirmation dialog body"
+  },
+  "options_data_import_invalid": {
+    "message": "That file isn't a valid backup.",
+    "description": "options: error shown for invalid import file"
+  },
+  "options_data_import_success": {
+    "message": "Import complete.",
+    "description": "options: import success message"
+  },
+
   "common_yes": {
     "message": "Yes",
     "description": "Generic Yes"

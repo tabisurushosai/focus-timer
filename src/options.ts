@@ -102,6 +102,10 @@ const els = {
   statsTab90: document.getElementById("stats-tab-90") as HTMLButtonElement | null,
   btnExportCsv: document.getElementById("btn-export-csv") as HTMLButtonElement | null,
   btnClearStats: document.getElementById("btn-clear-stats") as HTMLButtonElement | null,
+  btnExportSettings: document.getElementById("btn-export-settings") as HTMLButtonElement | null,
+  btnImportSettings: document.getElementById("btn-import-settings") as HTMLButtonElement | null,
+  importFile: document.getElementById("opt-import-file") as HTMLInputElement | null,
+  importFeedback: document.getElementById("import-feedback") as HTMLElement | null,
   confirmDialog: document.getElementById("confirm-action") as HTMLDialogElement | null,
   confirmTitle: document.getElementById("confirm-title") as HTMLElement | null,
   confirmBody: document.getElementById("confirm-body") as HTMLElement | null,
@@ -507,6 +511,106 @@ async function exportCsv(): Promise<void> {
   anchor.remove();
 }
 
+const EXPORT_SCHEMA_VERSION = 1;
+
+type SettingsExport = {
+  schema: "focus-timer-backup";
+  version: number;
+  exported_at: string;
+  settings: Settings;
+  stats: Stats;
+};
+
+/**
+ * Type guard for an imported backup payload. Validates the wrapper shape and
+ * the inner records' fields/types — anything off-spec is rejected so a
+ * malformed file can't poison chrome.storage.local.
+ */
+function isSettingsExport(value: unknown): value is SettingsExport {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  if (v.schema !== "focus-timer-backup") return false;
+  if (typeof v.version !== "number") return false;
+  const s = v.settings as Record<string, unknown> | undefined;
+  const st = v.stats as Record<string, unknown> | undefined;
+  if (!s || typeof s !== "object") return false;
+  if (!st || typeof st !== "object") return false;
+  // Spot-check a few required fields rather than re-listing the whole schema —
+  // missing fields get filled in by the DEFAULT_SETTINGS spread on read.
+  if (typeof s.work_min !== "number" || typeof s.theme !== "string") return false;
+  if (typeof st.total_focus_min !== "number" || typeof st.daily !== "object") return false;
+  return true;
+}
+
+/**
+ * Trigger a JSON download of the user's settings + stats. Premium status is
+ * deliberately omitted so the file can't be used to flip the unlock flag on
+ * another install.
+ */
+async function exportSettings(): Promise<void> {
+  const { settings, stats } = (await chrome.storage.local.get(["settings", "stats"])) as {
+    settings?: Settings;
+    stats?: Stats;
+  };
+  const payload: SettingsExport = {
+    schema: "focus-timer-backup",
+    version: EXPORT_SCHEMA_VERSION,
+    exported_at: new Date().toISOString(),
+    settings: { ...DEFAULT_SETTINGS, ...(settings ?? {}) },
+    stats: stats ?? DEFAULT_STATS,
+  };
+  const json = JSON.stringify(payload, null, 2);
+  const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(json)}`;
+  const anchor = document.createElement("a");
+  anchor.href = dataUrl;
+  anchor.download = `focus-timer-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+}
+
+/** Display a colored inline message under the import button. */
+function showImportFeedback(messageKey: MessageKey, kind: "error" | "success"): void {
+  const el = els.importFeedback;
+  if (!el) return;
+  el.textContent = t(messageKey);
+  el.classList.toggle("is-error", kind === "error");
+  el.classList.toggle("is-success", kind === "success");
+  el.hidden = false;
+}
+
+/**
+ * Read a user-selected JSON backup, validate, then write settings + stats to
+ * chrome.storage.local after confirmation. Premium is left untouched — the
+ * export never contains it, and we don't want imports to grant unlock either.
+ */
+async function importSettingsFromFile(file: File): Promise<void> {
+  let parsed: unknown;
+  try {
+    const text = await file.text();
+    parsed = JSON.parse(text);
+  } catch {
+    showImportFeedback("options_data_import_invalid", "error");
+    return;
+  }
+  if (!isSettingsExport(parsed)) {
+    showImportFeedback("options_data_import_invalid", "error");
+    return;
+  }
+  const ok = await confirmAction(
+    "options_data_import_confirm_title",
+    "options_data_import_confirm_body",
+  );
+  if (!ok) return;
+  // Merge with defaults so newer fields added since the backup get sensible
+  // values instead of going undefined.
+  await chrome.storage.local.set({
+    settings: { ...DEFAULT_SETTINGS, ...parsed.settings },
+    stats: { ...DEFAULT_STATS, ...parsed.stats },
+  });
+  showImportFeedback("options_data_import_success", "success");
+}
+
 /** Display a colored inline message under the license-key input. */
 function showLicenseFeedback(messageKey: MessageKey, kind: "error" | "success"): void {
   const el = els.licenseFeedback;
@@ -645,6 +749,22 @@ function wireForm(): void {
 
   els.btnClearStats?.addEventListener("click", () => {
     void clearStats();
+  });
+  els.btnExportSettings?.addEventListener("click", () => {
+    void exportSettings();
+  });
+  els.btnImportSettings?.addEventListener("click", () => {
+    els.importFile?.click();
+  });
+  els.importFile?.addEventListener("change", () => {
+    const input = els.importFile;
+    if (!input) return;
+    const file = input.files?.[0];
+    if (!file) return;
+    void importSettingsFromFile(file).finally(() => {
+      // Clear the input so re-selecting the same file fires `change` again.
+      input.value = "";
+    });
   });
   els.btnExportCsv?.addEventListener("click", () => {
     void exportCsv();

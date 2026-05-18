@@ -426,6 +426,39 @@
     "description": "options: Premium サマリの 90日切替タブ"
   },
 
+  "options_section_data": {
+    "message": "データのバックアップ",
+    "description": "options: 設定と統計のエクスポート/インポートセクション見出し"
+  },
+  "options_data_hint": {
+    "message": "設定と統計を JSON ファイルとして書き出し、別のデバイスに復元できます。Premium 状態はエクスポートに含まれません。",
+    "description": "options: データバックアップセクションの説明"
+  },
+  "options_data_export": {
+    "message": "設定をエクスポート",
+    "description": "options: 設定/統計を JSON で書き出すボタン"
+  },
+  "options_data_import": {
+    "message": "設定をインポート",
+    "description": "options: JSON から設定/統計を読み込むボタン"
+  },
+  "options_data_import_confirm_title": {
+    "message": "設定をインポートしますか？",
+    "description": "options: インポート確認ダイアログのタイトル"
+  },
+  "options_data_import_confirm_body": {
+    "message": "現在の設定と統計が上書きされます。元に戻せません。",
+    "description": "options: インポート確認ダイアログの本文"
+  },
+  "options_data_import_invalid": {
+    "message": "ファイルの形式が正しくありません。",
+    "description": "options: インポートファイルが不正な場合のエラー"
+  },
+  "options_data_import_success": {
+    "message": "インポートしました。",
+    "description": "options: インポート成功メッセージ"
+  },
+
   "common_yes": {
     "message": "はい",
     "description": "汎用 はい"
