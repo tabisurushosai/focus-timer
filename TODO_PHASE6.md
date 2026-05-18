@@ -3,7 +3,7 @@
 注意: TODO.md (Phase 1-5) は完成済、release/focus-timer.zip は申請準備済。
 このフェーズは品質向上のみ、既存機能を壊さない。
 
-- [ ] T101: README.md に使用例と機能一覧を追加 (英日)
+- [x] T101: README.md に使用例と機能一覧を追加 (英日)
 - [ ] T102: src/ 配下の全 .ts/.js ファイルに JSDoc コメント追加
 - [ ] T103: ARIA ラベルを popup/options の全 button/input に追加 (アクセシビリティ)
 - [ ] T104: キーボード操作完全対応 (Tab navigation + Enter キー)
