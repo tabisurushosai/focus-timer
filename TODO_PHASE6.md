@@ -4,7 +4,7 @@
 このフェーズは品質向上のみ、既存機能を壊さない。
 
 - [x] T101: README.md に使用例と機能一覧を追加 (英日)
-- [ ] T102: src/ 配下の全 .ts/.js ファイルに JSDoc コメント追加
+- [x] T102: src/ 配下の全 .ts/.js ファイルに JSDoc コメント追加
 - [ ] T103: ARIA ラベルを popup/options の全 button/input に追加 (アクセシビリティ)
 - [ ] T104: キーボード操作完全対応 (Tab navigation + Enter キー)
 - [ ] T105: ダークモード細部調整 (CSS variables の高コントラスト対応)

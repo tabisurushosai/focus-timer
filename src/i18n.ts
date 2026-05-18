@@ -1,3 +1,13 @@
+/**
+ * i18n.ts — typed bridge over chrome.i18n.
+ *
+ * Centralises the message-key catalogue so popup/options/background reference
+ * a single `MessageKey` union and the TypeScript compiler flags typos before
+ * they hit the bundle. The runtime helpers also act as a fallback layer: if
+ * chrome.i18n returns an empty string (key missing in _locales/), `t()`
+ * returns the key itself so UI stays debuggable instead of blank.
+ */
+
 export type MessageKey =
   | "appName"
   | "appDesc"
@@ -111,15 +121,27 @@ export type MessageKey =
   | "common_minutes"
   | "common_seconds";
 
+/**
+ * Translate a message key. Falls back to the key string itself when the
+ * locale file is missing the entry, so a typo is obvious in the UI rather
+ * than rendering as an empty span.
+ */
 export function t(key: MessageKey, substitutions?: string | string[]): string {
   const value = chrome.i18n.getMessage(key, substitutions);
   return value || key;
 }
 
+/** Returns Chrome's resolved UI language (e.g. "ja", "en-US"). */
 export function getUILanguage(): string {
   return chrome.i18n.getUILanguage();
 }
 
+/**
+ * Walk a DOM subtree and apply translations declared via data attributes:
+ * `data-i18n` rewrites textContent, `data-i18n-attr="attr:key;attr2:key2"`
+ * rewrites attribute values, and `data-i18n-title` sets document.title.
+ * Idempotent — safe to call again after dynamic DOM insertions.
+ */
 export function applyI18nToDom(root: ParentNode = document): void {
   const textNodes = root.querySelectorAll<HTMLElement>("[data-i18n]");
   textNodes.forEach((el) => {

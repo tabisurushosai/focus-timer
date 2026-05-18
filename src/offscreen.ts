@@ -20,6 +20,7 @@ const TOTAL_S = ATTACK_S + HOLD_S + DECAY_S;
 
 let audioCtx: AudioContext | null = null;
 
+/** Lazily create (and reuse) the single AudioContext for this document. */
 function context(): AudioContext {
   if (!audioCtx) {
     const Ctor =
@@ -31,11 +32,16 @@ function context(): AudioContext {
   return audioCtx;
 }
 
+/** Coerce arbitrary input into a safe [0,1] gain value. NaN/garbage → 0 (silent). */
 function clampVolume(raw: unknown): number {
   if (typeof raw !== "number" || !Number.isFinite(raw)) return 0;
   return Math.min(1, Math.max(0, raw));
 }
 
+/**
+ * Emit a short sine chime with attack/hold/exponential-decay envelope. The
+ * exponential tail avoids the click an abrupt cut would produce on speakers.
+ */
 function playChime(volume: number): void {
   if (volume <= 0) return;
   const ctx = context();
@@ -57,6 +63,7 @@ function playChime(volume: number): void {
   osc.stop(start + TOTAL_S + 0.02);
 }
 
+/** Type guard for incoming sound_play envelopes from background.ts. */
 function isSoundPlay(msg: unknown): msg is SoundPlayMessage {
   return (
     !!msg &&

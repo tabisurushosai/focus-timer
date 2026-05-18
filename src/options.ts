@@ -111,16 +111,22 @@ let premiumRange: 30 | 90 = 30;
 
 let savedIndicatorTimeout: number | undefined;
 
+/** Clamp/round a numeric input, returning `fallback` for non-finite values. */
 function clampNumber(value: number, min: number, max: number, fallback: number): number {
   if (!Number.isFinite(value)) return fallback;
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
+/** Clamp a raw volume to [0,1]; falls back to the default for NaN/garbage. */
 function clampVolume(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_SETTINGS.sound_volume;
   return Math.min(1, Math.max(0, value));
 }
 
+/**
+ * Reflect the master notification toggle into the dependent break-reminder
+ * row: disabled + visually dimmed when the master switch is off.
+ */
 function applyNotificationUiState(
   settings: Pick<Settings, "notification_enabled">,
 ): void {
@@ -132,6 +138,10 @@ function applyNotificationUiState(
   els.breakReminderHint?.classList.toggle("is-disabled", off);
 }
 
+/**
+ * Query Chrome's notification permission and surface the denied-hint banner
+ * only when the master switch is on (otherwise the warning is confusing).
+ */
 function checkNotificationPermission(): void {
   // chrome.notifications.getPermissionLevel returns "granted" or "denied".
   // We only surface the denied hint when the user has the master switch on;
@@ -158,6 +168,7 @@ function checkNotificationPermission(): void {
   }
 }
 
+/** Sync the sound-related controls (volume, test button, child-mode hint) to settings. */
 function applySoundUiState(settings: Pick<Settings, "sound_enabled" | "child_mode">): void {
   // sound_enabled is the master switch — disabling it also disables the volume
   // slider so the UI matches sound.ts's "no-op when disabled" contract.
@@ -171,19 +182,23 @@ function applySoundUiState(settings: Pick<Settings, "sound_enabled" | "child_mod
   }
 }
 
+/** Type guard for the Theme union. */
 function isTheme(value: string): value is Theme {
   return value === "light" || value === "dark" || value === "system";
 }
 
+/** Type guard for the Language union. */
 function isLanguage(value: string): value is Language {
   return value === "ja" || value === "en" || value === "auto";
 }
 
+/** Apply the active theme class to the body element. */
 function renderTheme(theme: Theme): void {
   els.body.classList.remove("theme-system", "theme-light", "theme-dark");
   els.body.classList.add(`theme-${theme}`);
 }
 
+/** Populate every form field/control from the supplied settings snapshot. */
 function renderForm(settings: Settings): void {
   els.workMin.value = String(settings.work_min);
   els.breakMin.value = String(settings.break_min);
@@ -210,6 +225,7 @@ function renderForm(settings: Settings): void {
   checkNotificationPermission();
 }
 
+/** Collect every form field into a validated Settings record ready to persist. */
 function readForm(): Settings {
   const themeRadio = els.themeRadios.find((r) => r.checked);
   const themeValue = themeRadio?.value ?? DEFAULT_SETTINGS.theme;
@@ -248,6 +264,10 @@ function readForm(): Settings {
   };
 }
 
+/**
+ * Render the Premium status line, trial day count, upgrade button state,
+ * and license-entry visibility based on the current Premium record.
+ */
 function renderPremium(premium: Premium): void {
   const now = Date.now();
   const unlocked = isPremium(premium);
@@ -285,6 +305,7 @@ function renderPremium(premium: Premium): void {
   }
 }
 
+/** Briefly show the "saved" indicator; auto-hides after SAVED_INDICATOR_MS. */
 function flashSaved(): void {
   els.savedIndicator.hidden = false;
   els.savedIndicator.classList.remove("is-hidden");
@@ -297,11 +318,13 @@ function flashSaved(): void {
   }, SAVED_INDICATOR_MS);
 }
 
+/** Build the assistive label for one stats row from its localized parts. */
 function formatRowAriaLabel(date: string, focusMin: number, sessions: number): string {
   const localized = formatRowDate(date);
   return t("options_stats_row_label", [localized, String(focusMin), String(sessions)]);
 }
 
+/** YYYY-MM-DD → M/D shorthand used for compact bar-chart labels. */
 function formatRowDate(isoDate: string): string {
   // YYYY-MM-DD → M/D (locale-neutral; Intl is overkill for the bar labels and
   // would balloon bundle size in the service worker too).
@@ -309,6 +332,10 @@ function formatRowDate(isoDate: string): string {
   return `${Number(m)}/${Number(d)}`;
 }
 
+/**
+ * Render the daily-focus bar chart into `container`. Bars are scaled to the
+ * row with the maximum focus_min so the chart auto-fits without a fixed Y axis.
+ */
 function renderChart(
   container: HTMLElement,
   rows: Array<{ date: string; focus_min: number; sessions: number }>,
@@ -344,6 +371,7 @@ function renderChart(
   }
 }
 
+/** Render the 7-day chart and (for Premium tier) the 30/90-day chart + totals. */
 function renderStats(stats: Stats, premium: Premium): void {
   const now = Date.now();
   const sevenDays = lastNDays(stats, 7, now);
@@ -390,6 +418,7 @@ function renderStats(stats: Stats, premium: Premium): void {
   }
 }
 
+/** Hydrate settings/premium/stats from storage and render the entire page. */
 async function loadAndRender(): Promise<void> {
   const { settings, premium, stats } = (await chrome.storage.local.get([
     "settings",
@@ -404,6 +433,10 @@ async function loadAndRender(): Promise<void> {
   renderStats(stats ?? DEFAULT_STATS, effectivePremium);
 }
 
+/**
+ * Localized confirm dialog. Falls back to window.confirm when <dialog> is
+ * unsupported so destructive actions still require explicit consent.
+ */
 function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
   const dialog = els.confirmDialog;
   const titleEl = els.confirmTitle;
@@ -425,6 +458,7 @@ function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boole
   });
 }
 
+/** Confirm-gated stats wipe: writes DEFAULT_STATS over the persisted record. */
 async function clearStats(): Promise<void> {
   const ok = await confirmAction(
     "options_stats_clear_confirm_title",
@@ -434,6 +468,7 @@ async function clearStats(): Promise<void> {
   await chrome.storage.local.set({ stats: DEFAULT_STATS });
 }
 
+/** Serialize the daily stats map into a sorted CSV string with header row. */
 function statsToCsv(stats: Stats): string {
   const header = "date,focus_min,sessions";
   const rows = Object.keys(stats.daily)
@@ -445,6 +480,11 @@ function statsToCsv(stats: Stats): string {
   return [header, ...rows].join("\n") + "\n";
 }
 
+/**
+ * Trigger a browser download of the CSV export. Uses a data: URL so we don't
+ * need the `downloads` permission; payload size is bounded (~3KB) by the
+ * 100-day retention cap.
+ */
 async function exportCsv(): Promise<void> {
   const { stats } = (await chrome.storage.local.get("stats")) as { stats?: Stats };
   const csv = statsToCsv(stats ?? DEFAULT_STATS);
@@ -459,6 +499,7 @@ async function exportCsv(): Promise<void> {
   anchor.remove();
 }
 
+/** Display a colored inline message under the license-key input. */
 function showLicenseFeedback(messageKey: MessageKey, kind: "error" | "success"): void {
   const el = els.licenseFeedback;
   if (!el) return;
@@ -468,6 +509,7 @@ function showLicenseFeedback(messageKey: MessageKey, kind: "error" | "success"):
   el.hidden = false;
 }
 
+/** Validate and apply the entered license key, surfacing localized feedback. */
 async function handleApplyLicense(): Promise<void> {
   const input = els.licenseKey;
   if (!input) return;
@@ -485,6 +527,7 @@ async function handleApplyLicense(): Promise<void> {
   // hide the entry section and disable the upgrade button.
 }
 
+/** Persist the current form state and flash the saved indicator. */
 async function saveSettings(): Promise<void> {
   const next = readForm();
   await chrome.storage.local.set({ settings: next });
@@ -493,12 +536,14 @@ async function saveSettings(): Promise<void> {
   flashSaved();
 }
 
+/** Restore DEFAULT_SETTINGS into both the form and storage. */
 async function resetToDefaults(): Promise<void> {
   renderForm(DEFAULT_SETTINGS);
   await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
   flashSaved();
 }
 
+/** Bind submit/change/click handlers for the whole options form. */
 function wireForm(): void {
   els.form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -608,6 +653,7 @@ function wireForm(): void {
   });
 }
 
+/** Re-render whenever settings/premium/stats change in chrome.storage.local. */
 function watchStorage(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
@@ -617,6 +663,7 @@ function watchStorage(): void {
   });
 }
 
+/** Wire i18n, form handlers, storage watcher, and run the first render. */
 function bootstrap(): void {
   applyI18nToDom(document);
   wireForm();

@@ -43,15 +43,22 @@ type Command =
   | { type: "timer_reset" }
   | { type: "timer_skip" };
 
+/** Clear any pending phase-end alarm. Idempotent. */
 async function clearPhaseAlarm(): Promise<void> {
   await chrome.alarms.clear(ALARM_PHASE_END);
 }
 
+/** (Re)schedule the phase-end alarm at the given absolute timestamp. */
 async function schedulePhaseAlarm(endTs: number): Promise<void> {
   await clearPhaseAlarm();
   await chrome.alarms.create(ALARM_PHASE_END, { when: endTs });
 }
 
+/**
+ * Begin (or resume) the current phase: derive remaining ms from settings,
+ * pin a new end_ts, persist the running state, and register the alarm.
+ * Also clears the idle-break reminder since the user is now engaged.
+ */
 async function startOrResume(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   const totalMs = totalForMode(timer.mode, settings);
@@ -72,6 +79,7 @@ async function startOrResume(): Promise<void> {
   await clearBreakReminder();
 }
 
+/** Pause a running timer, freezing the remaining ms for a clean resume. */
 async function pause(): Promise<void> {
   const timer = await get("timer");
   if (!timer.running) return;
@@ -85,6 +93,10 @@ async function pause(): Promise<void> {
   await clearPhaseAlarm();
 }
 
+/**
+ * Reset the current phase back to a full duration and clear all timers.
+ * Deliberately silent (no chime) per design-sound-mute.md.
+ */
 async function reset(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   await set("timer", {
@@ -97,6 +109,10 @@ async function reset(): Promise<void> {
   await clearBreakReminder();
 }
 
+/**
+ * Force a phase boundary: credit a partial work session when applicable,
+ * advance to the next phase, and play the transition chime/notification.
+ */
 async function skip(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   let sessionCount = timer.session_count;
@@ -134,6 +150,11 @@ async function skip(): Promise<void> {
   await scheduleBreakReminder(settings, next, Date.now());
 }
 
+/**
+ * Read-modify-write the stats record for a single completed work session.
+ * Below the MIN_SKIP_FOCUS_MS floor (enforced inside recordWorkCompletion)
+ * the call is a no-op so a brief skip can't pollute the daily totals.
+ */
 async function recordWorkSession(focusMs: number, endTs: number): Promise<void> {
   const stats = await get("stats");
   const recorded = recordWorkCompletion(stats, focusMs, endTs);
@@ -142,6 +163,11 @@ async function recordWorkSession(focusMs: number, endTs: number): Promise<void> 
   await set("stats", pruned);
 }
 
+/**
+ * Alarm-driven phase boundary handler. Records the completed work session,
+ * advances to the next mode, honours auto-start settings, and schedules the
+ * next alarm/notification chain.
+ */
 async function handlePhaseEnd(): Promise<void> {
   const [timer, settings] = await Promise.all([get("timer"), get("settings")]);
   if (!timer.running) return;
@@ -192,6 +218,11 @@ async function handlePhaseEnd(): Promise<void> {
   await scheduleBreakReminder(settings, next, endTs);
 }
 
+/**
+ * Run on service-worker wake to reconcile drift between wall-clock and the
+ * stored alarm. Either flushes a missed phase end or re-registers the alarm
+ * so the next phase boundary still fires.
+ */
 async function reconcileAfterWake(): Promise<void> {
   // After service worker wake-up: if running and end_ts already passed (e.g.
   // OS sleep ate the alarm) flush the phase immediately; otherwise re-register
@@ -205,6 +236,7 @@ async function reconcileAfterWake(): Promise<void> {
   }
 }
 
+/** One-shot bootstrap run on install/startup: defaults → trial clock → reconcile. */
 async function initialize(): Promise<void> {
   await ensureDefaults();
   // Bootstrap the trial clock the moment storage is ready so the 7-day window
@@ -214,6 +246,7 @@ async function initialize(): Promise<void> {
   await reconcileAfterWake();
 }
 
+/** Type guard for the runtime-message command envelope. */
 function isCommand(value: unknown): value is Command {
   if (!value || typeof value !== "object" || !("type" in value)) return false;
   const type = (value as { type: unknown }).type;
@@ -226,6 +259,7 @@ function isCommand(value: unknown): value is Command {
   );
 }
 
+/** Route a validated command to its handler. */
 async function dispatch(cmd: Command): Promise<void> {
   switch (cmd.type) {
     case "timer_start":

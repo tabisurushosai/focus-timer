@@ -47,6 +47,7 @@ let soundEnabledApplied: boolean | undefined;
 
 let tickHandle: number | undefined;
 
+/** Swap the body's mode-* class so CSS can style work vs. break vs. long_break. */
 function applyModeClass(mode: TimerMode): void {
   els.body.classList.remove("mode-work", "mode-break", "mode-long-break");
   els.body.classList.add(
@@ -54,6 +55,7 @@ function applyModeClass(mode: TimerMode): void {
   );
 }
 
+/** Render the timer's mode label, time-left, progress ring, and visible buttons. */
 function renderTimer(timer: TimerState, settings: Settings): void {
   applyModeClass(timer.mode);
   els.modeLabel.textContent = t(modeKey(timer.mode));
@@ -74,6 +76,7 @@ function renderTimer(timer: TimerState, settings: Settings): void {
   els.btnResume.hidden = timer.running || idle;
 }
 
+/** Render today's session count and focus minutes from the stats snapshot. */
 function renderStats(stats: Stats): void {
   // localDateKey matches the key background.ts writes — the toISOString slice
   // used UTC and would have flipped buckets at the wrong wall-clock moment.
@@ -85,6 +88,7 @@ function renderStats(stats: Stats): void {
   }
 }
 
+/** Show/hide the Premium and trial badges based on the current Premium state. */
 function renderPremium(premium: Premium): void {
   const now = Date.now();
   const unlocked = isPremium(premium);
@@ -106,6 +110,11 @@ function renderPremium(premium: Premium): void {
   }
 }
 
+/**
+ * Apply theme/child-mode/mute classes to body and reflect the same state into
+ * the toggle controls. Emits a polite live-region announcement when
+ * child-mode or sound-enabled changes from a prior render.
+ */
 function applyTheme(settings: Settings): void {
   els.body.classList.remove("theme-system", "theme-light", "theme-dark");
   els.body.classList.add(`theme-${settings.theme}`);
@@ -143,6 +152,7 @@ function announceSound(on: boolean): void {
   els.soundAnnounce.textContent = t(on ? "popup_sound_on" : "popup_sound_off");
 }
 
+/** Hydrate from storage and render every panel. Tolerant of pre-init storage. */
 async function loadAndRender(): Promise<void> {
   const { settings, timer, stats, premium } = (await chrome.storage.local.get([
     "settings",
@@ -166,6 +176,7 @@ async function loadAndRender(): Promise<void> {
   scheduleTick(timer, settings);
 }
 
+/** Drive a 250ms re-render loop while the timer is running, self-cancelling at 0. */
 function scheduleTick(timer: TimerState, settings: Settings): void {
   if (tickHandle !== undefined) {
     window.clearInterval(tickHandle);
@@ -181,6 +192,7 @@ function scheduleTick(timer: TimerState, settings: Settings): void {
   }, 250);
 }
 
+/** Post a typed command to the service worker; swallow cold-start errors. */
 async function sendCommand(type: string, payload?: Record<string, unknown>): Promise<void> {
   try {
     await chrome.runtime.sendMessage({ type, ...(payload ?? {}) });
@@ -189,6 +201,7 @@ async function sendCommand(type: string, payload?: Record<string, unknown>): Pro
   }
 }
 
+/** Read the current settings, shallow-merge a patch, and persist. */
 async function patchSettings(patch: Partial<Settings>): Promise<void> {
   const { settings } = (await chrome.storage.local.get("settings")) as {
     settings?: Settings;
@@ -202,6 +215,11 @@ function isChildMode(): boolean {
   return els.body.classList.contains("child-mode");
 }
 
+/**
+ * Show the localized confirm <dialog> and resolve true when the user picks
+ * the "ok" returnValue. Falls back to true (continue) when <dialog> is
+ * unsupported so child-mode never silently eats the action.
+ */
 function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
   const dialog = els.confirmDialog;
   const titleEl = els.confirmTitle;
@@ -223,6 +241,7 @@ function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boole
   });
 }
 
+/** Confirm-gated reset (child-mode only) → timer_reset command. */
 async function handleReset(): Promise<void> {
   if (isChildMode()) {
     const ok = await confirmAction("popup_confirm_reset_title", "popup_confirm_reset_body");
@@ -231,6 +250,7 @@ async function handleReset(): Promise<void> {
   await sendCommand("timer_reset");
 }
 
+/** Confirm-gated skip (child-mode only) → timer_skip command. */
 async function handleSkip(): Promise<void> {
   if (isChildMode()) {
     const ok = await confirmAction("popup_confirm_skip_title", "popup_confirm_skip_body");
@@ -239,6 +259,7 @@ async function handleSkip(): Promise<void> {
   await sendCommand("timer_skip");
 }
 
+/** Bind click/change handlers for every interactive popup element. */
 function wireControls(): void {
   els.btnStart.addEventListener("click", () => {
     void sendCommand("timer_start");
@@ -273,6 +294,7 @@ function wireControls(): void {
   });
 }
 
+/** Re-render whenever any of the tracked top-level storage keys change. */
 function watchStorage(): void {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
@@ -287,6 +309,7 @@ function watchStorage(): void {
   });
 }
 
+/** Wire i18n, controls, storage watcher, and trigger the first render. */
 function bootstrap(): void {
   applyI18nToDom(document);
   wireControls();
