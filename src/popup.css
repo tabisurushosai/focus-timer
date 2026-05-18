@@ -454,6 +454,53 @@ body.child-mode .timer__readout-time {
 }
 
 @media (prefers-contrast: more) {
+  :root {
+    --color-text: #000000;
+    --color-text-muted: #2a313d;
+    --color-border: #4a5160;
+    --color-primary: #1748c7;
+    --color-primary-contrast: #ffffff;
+    --color-progress: #1748c7;
+    --color-progress-track: #b9c0cc;
+    --color-success: #1c7a4d;
+    --color-warning: #8a4f08;
+    --color-focus-ring: #1748c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text: #ffffff;
+      --color-text-muted: #d8dde6;
+      --color-border: #6b7282;
+      --color-primary: #9ab8ff;
+      --color-primary-contrast: #000000;
+      --color-progress: #9ab8ff;
+      --color-progress-track: #4a5160;
+      --color-success: #7adba5;
+      --color-warning: #ffc580;
+      --color-focus-ring: #c5d6ff;
+    }
+  }
+  body.theme-light {
+    --color-text: #000000;
+    --color-text-muted: #2a313d;
+    --color-border: #4a5160;
+    --color-progress-track: #b9c0cc;
+  }
+  body.theme-dark {
+    --color-text: #ffffff;
+    --color-text-muted: #d8dde6;
+    --color-border: #6b7282;
+    --color-primary: #9ab8ff;
+    --color-primary-contrast: #000000;
+    --color-progress: #9ab8ff;
+    --color-progress-track: #4a5160;
+  }
+  :focus-visible {
+    outline-width: 3px;
+  }
+  .btn {
+    border-width: 2px;
+  }
   body.child-mode {
     --color-progress: #e1568f;
     --color-focus-ring: #e1568f;

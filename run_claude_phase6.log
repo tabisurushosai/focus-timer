@@ -5,3 +5,5 @@ T102 完了。`src/` 配下の全 12 ファイルの未文書化関数に JSDoc 
 [12:49:39] [focus-timer phase6 L3] 残13
 T103 完了。popup.html/options.html の全 input/button に `data-i18n-attr="aria-label:..."` を追加し、TODO_PHASE6.md を `[x]` に更新、commit `0ab9aa6` を push 済み。
 [12:53:02] [focus-timer phase6 L4] 残12
+T104 完了。stats タブに ARIA tab pattern の Arrow/Home/End キーナビ + roving tabindex を追加、confirm ダイアログ閉鎖後のフォーカス復元を popup/options 両方に実装。型チェック・テスト 304件・ビルドすべて通過、push 済み。
+[12:56:27] [focus-timer phase6 L5] 残11

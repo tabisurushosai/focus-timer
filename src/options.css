@@ -528,6 +528,53 @@ body.child-mode .options__section-title {
   }
 }
 
+@media (prefers-contrast: more) {
+  :root {
+    --color-text: #000000;
+    --color-text-muted: #2a313d;
+    --color-border: #4a5160;
+    --color-primary: #1748c7;
+    --color-primary-contrast: #ffffff;
+    --color-success: #1c7a4d;
+    --color-warning: #8a4f08;
+    --color-focus-ring: #1748c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text: #ffffff;
+      --color-text-muted: #d8dde6;
+      --color-border: #6b7282;
+      --color-primary: #9ab8ff;
+      --color-primary-contrast: #000000;
+      --color-success: #7adba5;
+      --color-warning: #ffc580;
+      --color-focus-ring: #c5d6ff;
+    }
+  }
+  body.theme-light {
+    --color-text: #000000;
+    --color-text-muted: #2a313d;
+    --color-border: #4a5160;
+  }
+  body.theme-dark {
+    --color-text: #ffffff;
+    --color-text-muted: #d8dde6;
+    --color-border: #6b7282;
+    --color-primary: #9ab8ff;
+    --color-primary-contrast: #000000;
+  }
+  :focus-visible {
+    outline-width: 3px;
+  }
+  .btn,
+  .field__input {
+    border-width: 2px;
+  }
+  .stats-clear {
+    color: #8a1d12;
+  }
+}
+
 @media (max-width: 540px) {
   .options {
     padding: var(--space-4) var(--space-3);
