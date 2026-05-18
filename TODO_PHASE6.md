@@ -9,7 +9,7 @@
 - [x] T104: キーボード操作完全対応 (Tab navigation + Enter キー)
 - [x] T105: ダークモード細部調整 (CSS variables の高コントラスト対応)
 - [x] T106: 設定の export/import 機能 (chrome.storage.local → JSON)
-- [ ] T107: i18n メッセージキー総点検、未使用削除 + ja/en 整合性チェック
+- [x] T107: i18n メッセージキー総点検、未使用削除 + ja/en 整合性チェック
 - [ ] T108: chrome.alarms / chrome.tabs 等の API 呼び出しに try-catch 追加
 - [ ] T109: manifest.json の description を _locales 経由で多言語化
 - [ ] T110: tests/ ディレクトリに最低 10 個の単体テスト追加 (vitest)
