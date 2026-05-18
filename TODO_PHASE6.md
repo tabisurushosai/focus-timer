@@ -6,7 +6,7 @@
 - [x] T101: README.md に使用例と機能一覧を追加 (英日)
 - [x] T102: src/ 配下の全 .ts/.js ファイルに JSDoc コメント追加
 - [x] T103: ARIA ラベルを popup/options の全 button/input に追加 (アクセシビリティ)
-- [ ] T104: キーボード操作完全対応 (Tab navigation + Enter キー)
+- [x] T104: キーボード操作完全対応 (Tab navigation + Enter キー)
 - [ ] T105: ダークモード細部調整 (CSS variables の高コントラスト対応)
 - [ ] T106: 設定の export/import 機能 (chrome.storage.local → JSON)
 - [ ] T107: i18n メッセージキー総点検、未使用削除 + ja/en 整合性チェック

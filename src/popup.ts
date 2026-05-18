@@ -218,22 +218,26 @@ function isChildMode(): boolean {
 /**
  * Show the localized confirm <dialog> and resolve true when the user picks
  * the "ok" returnValue. Falls back to true (continue) when <dialog> is
- * unsupported so child-mode never silently eats the action.
+ * unsupported so child-mode never silently eats the action. Restores focus
+ * to the previously-focused element on close so keyboard users don't get
+ * dropped at the top of the popup.
  */
 function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
   const dialog = els.confirmDialog;
   const titleEl = els.confirmTitle;
   const bodyEl = els.confirmBody;
   if (!dialog || !titleEl || !bodyEl || typeof dialog.showModal !== "function") {
-    // No <dialog> support — fall through to immediate execution so child-mode
-    // never silently swallows the action.
     return Promise.resolve(true);
   }
+  const previouslyFocused = document.activeElement as HTMLElement | null;
   titleEl.textContent = t(titleKey);
   bodyEl.textContent = t(bodyKey);
   return new Promise<boolean>((resolve) => {
     const onClose = () => {
       dialog.removeEventListener("close", onClose);
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+        previouslyFocused.focus();
+      }
       resolve(dialog.returnValue === "ok");
     };
     dialog.addEventListener("close", onClose);

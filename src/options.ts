@@ -409,11 +409,15 @@ function renderStats(stats: Stats, premium: Premium): void {
       const active = range === 30;
       els.statsTab30.classList.toggle("is-active", active);
       els.statsTab30.setAttribute("aria-selected", active ? "true" : "false");
+      // Roving tabindex: only the active tab is in the page tab order so Tab
+      // skips past the inactive tab and arrow keys handle in-tablist movement.
+      els.statsTab30.tabIndex = active ? 0 : -1;
     }
     if (els.statsTab90) {
       const active = range === 90;
       els.statsTab90.classList.toggle("is-active", active);
       els.statsTab90.setAttribute("aria-selected", active ? "true" : "false");
+      els.statsTab90.tabIndex = active ? 0 : -1;
     }
   }
 }
@@ -436,21 +440,25 @@ async function loadAndRender(): Promise<void> {
 /**
  * Localized confirm dialog. Falls back to window.confirm when <dialog> is
  * unsupported so destructive actions still require explicit consent.
+ * Returns focus to the element that triggered the dialog on close so
+ * keyboard users don't lose their position.
  */
 function confirmAction(titleKey: MessageKey, bodyKey: MessageKey): Promise<boolean> {
   const dialog = els.confirmDialog;
   const titleEl = els.confirmTitle;
   const bodyEl = els.confirmBody;
   if (!dialog || !titleEl || !bodyEl || typeof dialog.showModal !== "function") {
-    // Fall through to `confirm()` so headless / older runtimes still get a
-    // prompt rather than silently destroying data.
     return Promise.resolve(window.confirm(`${t(titleKey)}\n\n${t(bodyKey)}`));
   }
+  const previouslyFocused = document.activeElement as HTMLElement | null;
   titleEl.textContent = t(titleKey);
   bodyEl.textContent = t(bodyKey);
   return new Promise<boolean>((resolve) => {
     const onClose = () => {
       dialog.removeEventListener("close", onClose);
+      if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+        previouslyFocused.focus();
+      }
       resolve(dialog.returnValue === "ok");
     };
     dialog.addEventListener("close", onClose);
@@ -651,6 +659,31 @@ function wireForm(): void {
     premiumRange = 90;
     void loadAndRender();
   });
+
+  // ARIA tab pattern: ←/→ switch tablist focus, Home/End jump to ends.
+  const tabs = [els.statsTab30, els.statsTab90].filter(
+    (t): t is HTMLButtonElement => t !== null,
+  );
+  for (const tab of tabs) {
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex: number | undefined;
+      const currentIndex = tabs.indexOf(tab);
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        nextIndex = (currentIndex + 1) % tabs.length;
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      } else if (event.key === "Home") {
+        nextIndex = 0;
+      } else if (event.key === "End") {
+        nextIndex = tabs.length - 1;
+      }
+      if (nextIndex === undefined) return;
+      event.preventDefault();
+      const nextTab = tabs[nextIndex];
+      nextTab.focus();
+      nextTab.click();
+    });
+  }
 }
 
 /** Re-render whenever settings/premium/stats change in chrome.storage.local. */
