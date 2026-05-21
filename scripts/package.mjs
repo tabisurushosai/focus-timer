@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Bundle dist/ + manifest.json + icons/ + _locales/ into release/focus-timer.zip
+// Bundle dist/ + manifest.json + icons/ + _locales/ + legal/ into release/focus-timer.zip
 // Layout matches manifest paths: background.js at root, src/*.html under src/,
-// hashed assets under assets/, locales under _locales/, icons under icons/.
+// hashed assets under assets/, locales under _locales/, icons under icons/,
+// and legal docs under legal/ for options-page links.
 
 import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, rmSync, statSync } from "node:fs";
@@ -26,6 +27,7 @@ const requireExists = (path, hint) => {
 requireExists(resolve(root, "manifest.json"), "manifest.json");
 requireExists(resolve(root, "icons"), "icons/");
 requireExists(resolve(root, "_locales"), "_locales/");
+requireExists(resolve(root, "legal"), "legal/");
 requireExists(dist, "dist/");
 requireExists(resolve(dist, "background.js"), "dist/background.js");
 
@@ -36,11 +38,12 @@ mkdirSync(staging, { recursive: true });
 cpSync(resolve(root, "manifest.json"), resolve(staging, "manifest.json"));
 cpSync(resolve(root, "icons"), resolve(staging, "icons"), { recursive: true });
 cpSync(resolve(root, "_locales"), resolve(staging, "_locales"), { recursive: true });
+cpSync(resolve(root, "legal"), resolve(staging, "legal"), { recursive: true });
 cpSync(dist, staging, { recursive: true });
 
 const result = spawnSync(
   "zip",
-  ["-r", "-X", zipPath, "manifest.json", "icons", "_locales", "background.js", "src", "assets"],
+  ["-r", "-X", zipPath, "manifest.json", "icons", "_locales", "legal", "background.js", "src", "assets"],
   { cwd: staging, stdio: "inherit" },
 );
 
