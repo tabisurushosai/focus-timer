@@ -29,10 +29,10 @@
 これらのデータは Chrome 拡張機能の管理画面から本拡張機能を削除することで完全に消去されます。
 
 ### 4. 外部通信
-本拡張機能は通常動作中、いかなる外部サーバーとも通信しません。例外として、Premium 機能の購入時のみ、Stripe Checkout (https://checkout.stripe.com) の決済ページを新しいタブで開きます。決済情報の取り扱いは Stripe のプライバシーポリシーに従います。
+本拡張機能は通常動作中、いかなる外部サーバーとも通信しません。例外として、Premium 機能の購入時に利用者がボタンを押した場合のみ、Stripe がホストする Payment Link (https://buy.stripe.com) を新しいタブで開きます。本拡張機能は決済情報を収集せず、決済情報の取り扱いは Stripe のプライバシーポリシーに従います。
 
 ### 5. 子供のプライバシー
-本拡張機能は不登校児・発達特性児を含む子供の利用を想定していますが、子供から個人情報を収集することは一切ありません。広告・外部リンク・SNS 連携も一切含まれません。
+本拡張機能は不登校児・発達特性児を含む子供の利用を想定していますが、子供から個人情報を収集することは一切ありません。広告・SNS 連携は一切含まれません。外部ページは、上記の利用者操作による Stripe 決済ページに限定されます。
 
 ### 6. 権限について
 本拡張機能が要求する権限は、機能要件を満たす最小限のものに限定されています。各権限の用途は manifest.json および本拡張機能のストア掲載ページに記載されています。
@@ -70,10 +70,10 @@ The Extension stores the following data only on the user's device (via `chrome.s
 All such data is fully erased when the Extension is uninstalled from Chrome's extension management page.
 
 ### 4. External Communication
-Under normal operation, the Extension does not communicate with any external server. The sole exception is when a user initiates a Premium purchase, in which case the Stripe Checkout page (https://checkout.stripe.com) is opened in a new tab. Payment data handling is governed by Stripe's own privacy policy.
+Under normal operation, the Extension does not communicate with any external server. The sole exception is when a user clicks the Premium purchase button, in which case a Stripe-hosted Payment Link (https://buy.stripe.com) is opened in a new tab. The Extension does not collect payment information; payment data handling is governed by Stripe's own privacy policy.
 
 ### 5. Children's Privacy
-The Extension is intended for use including by children with school-refusal or developmental traits, but no personal information is collected from children. The Extension contains no advertisements, external links, or social media integrations.
+The Extension is intended for use including by children with school-refusal or developmental traits, but no personal information is collected from children. The Extension contains no advertisements or social media integrations. External pages are limited to the user-initiated Stripe payment page described above.
 
 ### 6. Permissions
 The permissions requested by the Extension are strictly limited to the minimum required to provide its features. The purpose of each permission is documented in manifest.json and on the Extension's Chrome Web Store listing.
